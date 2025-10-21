@@ -14,12 +14,6 @@ class Tablero:
             return True
         return False
 
-    def esta_lleno(self):
-        for fila in self.tablero:
-            if " " in fila:
-                return False
-        return True
-
     def comprobar_ganador(self, jugador):
         b = self.tablero
         for i in range(3):
@@ -32,3 +26,9 @@ class Tablero:
         if b[0][2] == b[1][1] == b[2][0] == jugador:
             return True
         return False
+
+    def esta_lleno(self):
+        for fila in self.tablero:
+            if " " in fila:
+                return False
+        return True
