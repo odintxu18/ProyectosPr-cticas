@@ -32,5 +32,4 @@ class Tablero:
         for fila in self.tablero:
             if " " in fila:
                 return False
-        self.juego.reiniciar()
         return True

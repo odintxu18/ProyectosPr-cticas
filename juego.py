@@ -49,7 +49,9 @@ class Juego:
     def obtener_jugador_actual(self):
         return self.jugador_actual
     def reiniciar(self):
+        self.tablero.esta_lleno()
         self.tablero = Tablero()
         self.jugador_actual = "X"
         self.ganador = None
         self.terminado = False
+        self.tablero.imprimir()
