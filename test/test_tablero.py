@@ -4,7 +4,7 @@ import tablero
 from tablero import Tablero
 @pytest.fixture
 def tablr():
-    return Tablero()
+    yield Tablero()
 
 def test_colocar_en_casilla_vacia(tablr):
     resultado = tablr.colocar(0, 0, "X")

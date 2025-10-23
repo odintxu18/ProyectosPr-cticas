@@ -6,7 +6,7 @@ from tablero import Tablero
 
 @pytest.fixture
 def jgame():
-    return Juego()
+    yield Juego()
 
 
 def test_turno_valido(jgame):
