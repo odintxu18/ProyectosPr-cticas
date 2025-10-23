@@ -1,7 +1,8 @@
 class Tablero:
     def __init__(self):
+        self.juego = None
         self.tablero = [[" " for _ in range(3)] for _ in range(3)]
-#Crea el tablero para el juego a traves de un bucle
+
     def imprimir(self):
         for i in range(3):
             print(" | ".join(self.tablero[i]))
@@ -13,7 +14,7 @@ class Tablero:
             self.tablero[fila][col] = jugador
             return True
         return False
-#Comprueba a traves de todas las filas, columnas y diagonales si hay un posible ganador en el juego
+
     def comprobar_ganador(self, jugador):
         b = self.tablero
         for i in range(3):
@@ -26,7 +27,7 @@ class Tablero:
         if b[0][2] == b[1][1] == b[2][0] == jugador:
             return True
         return False
-#mira si el tablero de juego esta lleno o no, en el caso de que lo este devuelve un false para terminar el juego
+
     def esta_lleno(self):
         for fila in self.tablero:
             if " " in fila:
