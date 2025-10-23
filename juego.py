@@ -7,6 +7,7 @@ class MovimientoInvalido(Exception):
 class Juego:
 
     def __init__(self):
+        self.obetener_ganador = None
         self.tablero = Tablero()
         self.jugador_actual = "X"
         self.ganador = None
