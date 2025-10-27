@@ -1,7 +1,6 @@
 import pytest
 
-from juego import Juego
-from tablero import Tablero
+from src.application.juego import Juego
 
 
 @pytest.fixture

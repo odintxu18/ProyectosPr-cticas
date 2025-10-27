@@ -1,7 +1,6 @@
 import pytest
 
-import tablero
-from tablero import Tablero
+from src.application.tablero import Tablero
 @pytest.fixture
 def tablr():
     yield Tablero()

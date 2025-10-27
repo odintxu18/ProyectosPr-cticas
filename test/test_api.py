@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from main import app, api_juego
+from src.handler.main import app, api_juego
 
 
 @pytest.fixture

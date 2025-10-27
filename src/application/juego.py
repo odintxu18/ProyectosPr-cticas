@@ -1,8 +1,9 @@
-from tablero import Tablero
+from src.application.tablero import Tablero
 
 
 class MovimientoInvalido(Exception):
     pass
+
 
 class Juego:
 
@@ -49,6 +50,7 @@ class Juego:
 
     def obtener_jugador_actual(self):
         return self.jugador_actual
+
     def reiniciar(self):
         self.tablero.esta_lleno()
         self.tablero = Tablero()

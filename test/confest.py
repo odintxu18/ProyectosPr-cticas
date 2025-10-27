@@ -1,5 +1,5 @@
 import pytest
-from tablero import *
+from src.application.tablero import *
 
 @pytest.fixture
 def tablr():
