@@ -4,35 +4,36 @@ from abc import ABC, abstractmethod
 class IUnitOfWork(ABC):
 
     def __enter__(self):
-        pass
+        self.connect()
+        return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
+    def __exit__(self, *args):
+        self.disconnect()
 
     @abstractmethod
     def connect(self):
-        pass
+        raise NotImplementedMethod
 
     @abstractmethod
     def disconnect(self):
-        pass
+        raise NotImplementedMethod
 
     @abstractmethod
     def commit(self):
-        pass
+        raise NotImplementedMethod
 
     @abstractmethod
     def rollback(self):
-        pass
+        raise NotImplementedMethod
 
     @abstractmethod
     def get_repository(self, repository_key: str):
-        pass
+        raise NotImplementedMethod
 
     @abstractmethod
     def get_new_session(self):
-        pass
+        raise NotImplementedMethod
 
     @abstractmethod
     def close(self):
-        pass
+        raise NotImplementedMethod

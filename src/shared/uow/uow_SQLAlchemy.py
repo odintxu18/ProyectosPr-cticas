@@ -8,33 +8,26 @@ from src.shared.uow.SQLAlchemy_repositories import (
 
 
 class UnitOfWorkSQLAlchemy(IUnitOfWork):
-    def __init__(self, repository_container_class: Type, session_factory=SessionLocal):
+    def __init__(
+        self,
+        repository_container_class: Type[RepositoryContainer],
+        session_factory=SessionLocal,
+    ):
 
         self._session_factory = session_factory
         self._session: Session = None
-        self._repository_container_class = RepositoryContainer
+        self._repository_container_class = repository_container_class
         self.repositories = None
-
-    def __enter__(self):
-        self.connect()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type:
-            self.rollback()
-        else:
-            self.commit()
-        self.close()
 
     def connect(self):
         self._session = self.get_new_session()
 
-        self.repositories = RepositoryContainer(self._session)
+        repository_storage = self._repository_container_class(self._session)
+        self.repositories = repository_storage.get_repositories()
 
     def disconnect(self):
         if self._session:
             self._session.close()
-            self._session = None
 
     def commit(self):
         if self._session:
