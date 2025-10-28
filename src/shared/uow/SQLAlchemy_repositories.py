@@ -1,9 +1,7 @@
-from . import sql_alchemy_jugador_repository, Jugada_partida_repository
-from .Jugada_partida_repository import IPartidaJugadaRepository
-from .jugador_repository import IJugadorRepository
-from .sql_alchemy_jugador_repository import JugadorRepositorySQLAlchemy
-
-from .sql_alchemy_jugada_partida_repository import PartidaJugadaRepositorySQLAlchemy
+from src.juego.repository import sql_alchemy_jugador_repository
+from src.partida.repository import Jugada_partida_repository
+from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
+from src.juego.repository.jugador_repository import IJugadorRepository
 
 
 class RepositoryContainer:

@@ -1,8 +1,10 @@
 from typing import Type
 from sqlalchemy.orm import Session
-from src.persistance.database import SessionLocal
-from src.persistance.UoW.unit_of_work import IUnitOfWork
-from src.repository.SQLAlchemy_repositories import RepositoryContainer
+from src.shared.dbmodels.database import SessionLocal
+from src.shared.uow.unit_of_work import IUnitOfWork
+from src.shared.uow.SQLAlchemy_repositories import (
+    RepositoryContainer,
+)
 
 
 class UnitOfWorkSQLAlchemy(IUnitOfWork):

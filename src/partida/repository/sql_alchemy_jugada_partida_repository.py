@@ -1,7 +1,7 @@
-from sqlalchemy.orm import Session, Query
-from typing import List, Optional, Any
-from src.persistance.models.dbmodels import Partida, Jugada
-from src.repository.Jugada_partida_repository import IPartidaJugadaRepository
+from sqlalchemy.orm import Session
+from typing import Optional
+from src.shared.dbmodels.dbmodels import Partida, Jugada
+from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
 
 
 class PartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository):

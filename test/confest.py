@@ -1,5 +1,6 @@
 import pytest
-from src.application.tablero import *
+from src.partida.domain.tablero import *
+
 
 @pytest.fixture
 def tablr():

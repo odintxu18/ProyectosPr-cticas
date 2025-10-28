@@ -1,4 +1,4 @@
-from src.application.tablero import Tablero
+from src.partida.domain.tablero import Tablero
 
 
 class MovimientoInvalido(Exception):

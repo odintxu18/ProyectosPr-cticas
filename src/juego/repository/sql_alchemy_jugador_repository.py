@@ -2,8 +2,8 @@
 
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from src.persistance.models.dbmodels import Jugador
-from src.repository.jugador_repository import IJugadorRepository
+from src.shared.dbmodels.dbmodels import Jugador
+from src.juego.repository.jugador_repository import IJugadorRepository
 
 
 class JugadorRepositorySQLAlchemy(IJugadorRepository):

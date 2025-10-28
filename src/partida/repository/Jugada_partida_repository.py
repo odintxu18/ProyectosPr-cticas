@@ -1,4 +1,4 @@
-from src.persistance.models.dbmodels import Partida, Jugada
+from src.shared.dbmodels.dbmodels import Partida, Jugada
 from abc import ABC, abstractmethod
 from typing import List, Optional
 

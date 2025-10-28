@@ -1,9 +1,4 @@
-from src.repository import sql_alchemy_jugador_repository
 from abc import ABC, abstractmethod
-from src.repository import jugador_repository
-from src.repository import Jugada_partida_repository
-from src.repository.Jugada_partida_repository import IPartidaJugadaRepository
-from src.repository.jugador_repository import IJugadorRepository
 
 
 class IUnitOfWork(ABC):

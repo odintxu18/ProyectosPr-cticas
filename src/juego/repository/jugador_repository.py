@@ -1,8 +1,6 @@
-# src/domain/repositories/jugador_repository_interface.py
-
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from src.persistance.models.dbmodels import Jugador
+from src.shared.dbmodels.dbmodels import Jugador
 
 
 class IJugadorRepository(ABC):

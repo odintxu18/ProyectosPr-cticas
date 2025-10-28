@@ -1,10 +1,7 @@
 from datetime import datetime, timezone
-from src.persistance.UoW.unit_of_work import IUnitOfWork
-from src.persistance.UoW.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
-from src.persistance.models.dbmodels import Jugador, Partida, Jugada
-from src.repository import jugador_repository
-from src.persistance.UoW import unit_of_work
-from src.repository.jugador_repository import IJugadorRepository
+from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
+from src.shared.dbmodels.dbmodels import Jugador, Partida, Jugada
+from src.juego.repository.jugador_repository import IJugadorRepository
 
 
 class CrearJugadorUseCase:

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, FastAPI
 from pydantic import BaseModel
-from src.application.juego import Juego, MovimientoInvalido
+from src.juego.domain.juego import Juego, MovimientoInvalido
 
 
 class Jugada(BaseModel):
