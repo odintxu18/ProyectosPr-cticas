@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from src.shared.dbmodels.dbmodels import Jugador
+
+from src.juego.domain.jugador import Jugador
 
 
 class IJugadorRepository(ABC):

@@ -1,10 +1,12 @@
-from sqlalchemy import insert, Integer
-from sqlalchemy.orm import Session
-from typing import Optional, Any
+from src.partida.domain.jugada import Jugada
+from src.partida.domain.partida import Partida
+from src.shared.dbmodels.dbmodels import *
+
+from sqlalchemy.orm import Session, session
+
 from src.shared.dbmodels.dbmodels import (
     Partida as PartidaModel,
     Jugada as JugadaModel,
-    Partida,
 )
 from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
 
@@ -14,82 +16,144 @@ class PartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def agregar_partida(self, datos: dict) -> str:
+    def agregar_partida(self, game: Partida) -> Partida:
 
-        partida = PartidaModel(**datos)
-        self.session.add(partida)
+        partida_model = PartidaModel(
+            id=game.id,
+            id_jugador_x=game.id_jugador_x,
+            id_jugador_o=game.id_jugador_o,
+            fecha_inicio=game.fecha_inicio,
+            fecha_fin=game.fecha_fin,
+            id_ganador=game.id_ganador,
+        )
+        self.session.add(partida_model)
         self.session.commit()
 
-        return datos["id"]
+        return Partida(
+            id=partida_model.id,
+            id_jugador_x=partida_model.id_jugador_x,
+            id_jugador_o=partida_model.id_jugador_o,
+            fecha_inicio=partida_model.fecha_inicio,
+            fecha_fin=partida_model.fecha_fin,
+            id_ganador=partida_model.id_ganador,
+        )
 
-    def obtener_partida(self, filtros: str) -> Optional[dict]:
-        partida = self.session.query(PartidaModel).filter_by(**filtros).first()
-        if partida:
-            return {
-                column.name: getattr(partida, column.name)
-                for column in PartidaModel.__table__.columns
-            }
+    def obtener_partida_por_id(self, partida_id: str) -> Partida | None:
+        partida_model = self.session.get(PartidaModel, partida_id)
+        if partida_model:
+            return Partida(
+                id=partida_model.id,
+                id_jugador_x=partida_model.id_jugador_x,
+                id_jugador_o=partida_model.id_jugador_o,
+                fecha_inicio=partida_model.fecha_inicio,
+                fecha_fin=partida_model.fecha_fin,
+                id_ganador=partida_model.id_ganador,
+            )
+        return None
 
-    def obtener_partida_por_id(self, partida_id: int) -> Optional[Partida]:
-        pass
-
-    def listar_partidas(self, filtros: str) -> list[str]:
-        partidas = self.session.query(PartidaModel).filter_by(**filtros).all()
+    def listar_partidas(self) -> list[Partida]:
+        partidas = self.session.query(Partida).all()
         return [
-            {
-                column.name: getattr(p, column.name)
-                for column in PartidaModel.__table__.columns
-            }
+            Partida(
+                id=p.id,
+                id_jugador_x=p.id_jugador_x,
+                id_jugador_o=p.id_jugador_o,
+                fecha_inicio=p.fecha_inicio,
+                fecha_fin=p.fecha_fin,
+                id_ganador=p.id_ganador,
+            )
             for p in partidas
         ]
 
-    def actualizar_partida(self, filtros: dict, nuevos: dict) -> bool:
+    def actualizar_partida(self, game: Partida) -> bool:
         try:
-            resultado = (
-                self.session.query(PartidaModel)
-                .filter_by(**filtros)
-                .update(nuevos, synchronize_session=False)
-            )
+            partida_model = self.session.get(PartidaModel, game.id)
+            if not partida_model:
+                return False
+
+            partida_model.fecha_fin = game.fecha_fin
+            partida_model.id_ganador = game.id_ganador
+
             self.session.commit()
-            return resultado > 0
+            return True
         except Exception as e:
             self.session.rollback()
             raise e
 
-    def agregar_jugada(self, datos: dict) -> str:
+    def delete_partida(self, id_partida: str) -> bool:
+        try:
+            eliminado = (
+                self.session.query(PartidaModel).filter_by(id=id_partida).delete()
+            )
+            self.session.commit()
+            return eliminado > 0
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
-        jugada = JugadaModel(**datos)
-        self.session.add(jugada)
+    def agregar_jugada(self, play: Jugada) -> Jugada:
+
+        jugada_model = JugadaModel(
+            id=play.id,
+            id_partida=play.id_partida,
+            id_jugador=play.id_jugador,
+            turno=play.turno,
+            fila=play.fila,
+            columna=play.columna,
+            fecha_jugada=play.fecha_jugada,
+        )
+        self.session.add(jugada_model)
         self.session.commit()
-        return {
-            column.name: getattr(jugada, column.name)
-            for column in JugadaModel.__table__.columns
-        }
+        return Jugada(
+            id=jugada_model.id,
+            id_partida=jugada_model.id_partida,
+            id_jugador=jugada_model.id_jugador,
+            turno=jugada_model.turno,
+            fila=jugada_model.fila,
+            columna=jugada_model.columna,
+            fecha_jugada=jugada_model.fecha_jugada,
+        )
 
-    def obtener_jugada_por_id(self, filtros: dict) -> Optional[dict]:
-        jugada = self.session.query(JugadaModel).filter_by(**filtros).first()
-        if jugada:
-            return {
-                column.name: getattr(jugada, column.name)
-                for column in PartidaModel.__table__.columns
-            }
+    def obtener_jugada_por_id(self, id_jugada: str) -> Jugada | None:
+        jugada_model = self.session.get(JugadaModel, id_jugada)
+        if jugada_model:
+            return Jugada(
+                id=jugada_model.id,
+                id_partida=jugada_model.id_partida,
+                id_jugador=jugada_model.id_jugador,
+                turno=jugada_model.turno,
+                fila=jugada_model.fila,
+                columna=jugada_model.columna,
+                fecha_jugada=jugada_model.fecha_jugada,
+            )
+        return None
 
-    def obtener_jugadas_por_partida(self, filtros: dict) -> list[dict]:
+    def obtener_jugadas_por_partida(self, id_partida: str) -> list[Jugada]:
 
-        jugadas = self.session.query(JugadaModel).filter_by(**filtros).all()
+        jugadas_model = (
+            self.session.query(JugadaModel)
+            .filter_by(id_partida=id_partida)
+            .order_by(JugadaModel.turno)
+            .all()
+        )
         return [
-            {
-                column.name: getattr(jugada, column.name)
-                for column in JugadaModel.__table__.columns
-            }
-            for jugada in jugadas
+            Jugada(
+                id=j.id,
+                id_partida=j.id_partida,
+                id_jugador=j.id_jugador,
+                turno=j.turno,
+                fila=j.fila,
+                columna=j.columna,
+                fecha_jugada=j.fecha_jugada,
+            )
+            for j in jugadas_model
         ]
 
-    def eliminar_jugada(self, filtros: dict) -> bool:
+    def eliminar_jugada(self, id_jugada: str) -> bool:
         try:
-            resultado = self.session.query(JugadaModel).filter_by(**filtros).delete()
+            eliminado = self.session.query(JugadaModel).filter_by(id=id_jugada).delete()
             self.session.commit()
-            return resultado > 0
+            return eliminado > 0
         except Exception as e:
             self.session.rollback()
             raise e

@@ -1,10 +1,13 @@
 # src/persistance/repositories/jugador_repository_sqlalchemy.py
-
+from pygments.lexers import j
 from sqlalchemy.orm import Session
 from typing import List, Optional
+
+from src.juego.domain.jugador import Jugador
 from src.shared.dbmodels.dbmodels import Jugador as JugadorModel
 from src.juego.repository.jugador_repository import IJugadorRepository
 from test import jugador
+from src.shared.dbmodels.dbmodels import *
 
 
 class JugadorRepositorySQLAlchemy(IJugadorRepository):
@@ -12,62 +15,77 @@ class JugadorRepositorySQLAlchemy(IJugadorRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def add(self, datos: dict) -> dict:
-        campos_validos = {c.name for c in JugadorModel.__table__.columns}
-        datos_filtrados = {k: v for k, v in datos.items() if k in campos_validos}
-        jugador = JugadorModel(**datos_filtrados)
-        self.session.add(jugador)
+    def add(self, player: Jugador) -> Jugador:
+
+        jugador_model = JugadorModel(
+            id=player.id,
+            nombre=player.nombre,
+            correo=player.correo,
+        )
+        self.session.add(jugador_model)
         self.session.commit()
-        self.session.refresh(jugador)
-        return {
-            column.name: getattr(jugador, column.name)
-            for column in JugadorModel.__table__.columns
-        }
 
-    def get_by_id(self, filtros: str) -> Optional[dict]:
-        jugador = self.session.query(JugadorModel).filter_by(**filtros).first()
-        if jugador:
-            return {
-                column.name: getattr(jugador, column.name)
-                for column in JugadorModel.__table__.columns
-            }
+        return Jugador(
+            id=jugador_model.id,
+            nombre=jugador_model.nombre,
+            correo=jugador_model.correo,
+        )
 
-    def get_by_nombre(self, filtros: dict) -> Optional[dict]:
-        jugador = self.session.query(JugadorModel).filter_by(**filtros).first()
-        if jugador:
-            return {
-                column.name: getattr(jugador, column.name)
-                for column in JugadorModel.__table__.columns
-            }
+    def get_by_id(self, id_jugador: str) -> Jugador | None:
+        jugador_model = self.session.get(JugadorModel, id_jugador)
+        if jugador_model:
+            return Jugador(
+                id=jugador_model.id,
+                nombre=jugador_model.nombre,
+                correo=jugador_model.correo,
+            )
+        return None
 
-    def get_all(self, filtros: dict) -> List[dict]:
-        jugador = self.session.query(JugadorModel).filter_by(**filtros).all()
+    def get_by_nombre(self, nombre_jugador: str) -> Jugador:
+        jugador_model = self.session.get(JugadorModel, nombre_jugador)
+        if jugador_model:
+            return Jugador(
+                id=jugador_model.id,
+                nombre=jugador_model.nombre,
+                correo=jugador_model.correo,
+            )
+        return None
+
+    def get_all(self) -> List[Jugador]:
+        jugadores = self.session.query(Jugador).all()
+
         return [
-            {
-                column.name: getattr(p, column.name)
-                for column in JugadorModel.__table__.columns
-            }
-            for p in jugador
+            Jugador(
+                id=j.id,
+                nombre=j.nombre,
+                correo=j.correo,
+            )
+            for j in jugadores
         ]
 
-    def update(self, filtros: dict, nuevos: dict) -> bool:
+    def update(self, jugador: Jugador) -> bool:
         try:
-            resultado = (
+            actualizado = (
                 self.session.query(JugadorModel)
-                .filter_by(**filtros)
-                .update(nuevos, synchronize_session=False)
+                .filter_by(id=jugador.id)
+                .update(
+                    {"nombre": jugador.nombre, "correo": jugador.correo},
+                    synchronize_session=False,
+                )
             )
             self.session.commit()
-            return resultado > 0
+            return actualizado > 0
         except Exception as e:
             self.session.rollback()
             raise e
 
-    def delete(self, filtros: dict) -> bool:
+    def delete(self, id_jugador: str) -> bool:
         try:
-            resultado = self.session.query(JugadorModel).filter_by(**filtros).delete()
+            eliminado = (
+                self.session.query(JugadorModel).filter_by(id=id_jugador).delete()
+            )
             self.session.commit()
-            return resultado > 0
+            return eliminado > 0
         except Exception as e:
             self.session.rollback()
             raise e
