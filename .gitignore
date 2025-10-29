@@ -1,2 +1,28 @@
-.idea/*
-__pycache__/*
+# created by virtualenv automatically
+# Entornos virtuales
+.venv/
+env/
+venv/
+
+# Archivos temporales
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Configuración de IDE
+.vscode/
+.idea/
+
+# Archivos de pruebas
+test/__pycache__/
+test/.pytest_cache/
+
+# Archivos de dependencias locales
+*.sqlite3
+*.db
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
