@@ -51,6 +51,8 @@ def test_obtener_partida(session):
     partida = repo.agregar_partida(datos)
     document = repo.obtener_partida({"id": datos["id"]})
     assert document is not None
+    assert document["id"] == datos["id"]
+    assert document["id_ganador"] is None
 
 
 def test_obtener_multiples_partidas(session):
@@ -75,6 +77,10 @@ def test_obtener_multiples_partidas(session):
 
     todas = repo.listar_partidas({})
     assert len(todas) >= 3
+
+    ids_en_db = {p["id"] for p in todas}
+    for datos in partidas_data:
+        assert datos["id"] in ids_en_db
 
 
 def test_actualizar_partida(session):
@@ -108,26 +114,37 @@ def test_actualizar_partida(session):
 
 def test_agregar_jugada(session):
     repo = PartidaJugadaRepositorySQLAlchemy(session)
+
     id_jugador_1 = str(uuid.uuid4())
     id_jugador_2 = str(uuid.uuid4())
-    datos = {
-        "id": str(uuid.uuid4()),
+    id_partida = str(uuid.uuid4())
+
+    datos_partida = {
+        "id": id_partida,
         "id_jugador_x": id_jugador_1,
         "id_jugador_o": id_jugador_2,
         "fecha_inicio": datetime.now(),
     }
-    partida = repo.agregar_partida(datos)
+    partida = repo.agregar_partida(datos_partida)
+
     datos_jugada = {
-        "id_partida": str(uuid.uuid4()),
-        "id_jugador": 1,
+        "id": str(uuid.uuid4()),
+        "id_partida": id_partida,
+        "id_jugador": id_jugador_1,
         "turno": 1,
         "fila": 0,
         "columna": 2,
         "fecha_jugada": datetime.now(),
     }
+
     jugada = repo.agregar_jugada(datos_jugada)
-    assert jugada["id_partida"] == datos_jugada["id_partida"]
+
+    assert jugada["id"] == datos_jugada["id"]
+    assert jugada["id_partida"] == id_partida
+    assert jugada["id_jugador"] == id_jugador_1
     assert jugada["fila"] == 0
+    assert jugada["columna"] == 2
+    assert isinstance(jugada["fecha_jugada"], datetime)
 
 
 def test_eliminar_jugada(session):

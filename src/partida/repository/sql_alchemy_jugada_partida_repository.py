@@ -57,19 +57,10 @@ class PartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository):
             raise e
 
     def agregar_jugada(self, datos: dict) -> str:
-        campos_validos = {c.name for c in JugadaModel.__table__.columns}
-        datos_filtrados = {k: v for k, v in datos.items() if k in campos_validos}
 
-        if "id" not in datos_filtrados:
-            import uuid
-
-            datos_filtrados["id"] = str(uuid.uuid4())
-
-        jugada = JugadaModel(**datos_filtrados)
+        jugada = JugadaModel(**datos)
         self.session.add(jugada)
         self.session.commit()
-        self.session.refresh(jugada)
-
         return {
             column.name: getattr(jugada, column.name)
             for column in JugadaModel.__table__.columns
