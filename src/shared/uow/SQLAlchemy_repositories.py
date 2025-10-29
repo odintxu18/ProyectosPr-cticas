@@ -1,3 +1,11 @@
+from src.juego.repository.sql_alchemy_jugador_repository import (
+    JugadorRepositorySQLAlchemy,
+)
+from src.partida.repository.sql_alchemy_jugada_partida_repository import (
+    PartidaJugadaRepositorySQLAlchemy,
+)
+
+
 class RepositoryContainer:
     def __init__(self, session):
         self._repositories = {

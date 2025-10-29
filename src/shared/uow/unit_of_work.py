@@ -12,28 +12,28 @@ class IUnitOfWork(ABC):
 
     @abstractmethod
     def connect(self):
-        raise NotImplementedMethod
+        raise NotImplementedError()
 
     @abstractmethod
     def disconnect(self):
-        raise NotImplementedMethod
+        raise NotImplementedError()
 
     @abstractmethod
     def commit(self):
-        raise NotImplementedMethod
+        raise NotImplementedError()
 
     @abstractmethod
     def rollback(self):
-        raise NotImplementedMethod
+        raise NotImplementedError()
 
     @abstractmethod
     def get_repository(self, repository_key: str):
-        raise NotImplementedMethod
+        raise NotImplementedError()
 
     @abstractmethod
     def get_new_session(self):
-        raise NotImplementedMethod
+        raise NotImplementedError()
 
     @abstractmethod
     def close(self):
-        raise NotImplementedMethod
+        raise NotImplementedError()
