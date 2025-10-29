@@ -1,21 +1,25 @@
-from tablero import Tablero
+from src.partida.domain.tablero import Tablero
+
+
+class MovimientoInvalido(Exception):
+    pass
+
 
 class Juego:
-#se establecen los selfs para poder dar el juego
+
     def __init__(self):
+        self.obetener_ganador = None
         self.tablero = Tablero()
         self.jugador_actual = "X"
         self.ganador = None
         self.terminado = False
-#Saltan las excepciones del juego o si la persona ha ganado
+
     def realizar_turno(self, fila, col):
         if not (0 <= fila <= 2 and 0 <= col <= 2):
-            print("Posición fuera de rango. Intenta con valores entre 0 y 2.")
-            return False
+            raise MovimientoInvalido("Fuera de rango")
 
         if not self.tablero.colocar(fila, col, self.jugador_actual):
-            print("Casilla ocupada. Elige otra.")
-            return False
+            raise MovimientoInvalido("Casilla Invalida")
 
         if self.tablero.comprobar_ganador(self.jugador_actual):
             self.ganador = self.jugador_actual
@@ -46,3 +50,11 @@ class Juego:
 
     def obtener_jugador_actual(self):
         return self.jugador_actual
+
+    def reiniciar(self):
+        self.tablero.esta_lleno()
+        self.tablero = Tablero()
+        self.jugador_actual = "X"
+        self.ganador = None
+        self.terminado = False
+        self.tablero.imprimir()
