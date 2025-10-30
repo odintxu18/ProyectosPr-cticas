@@ -2,7 +2,7 @@ from src.partida.domain.jugada import Jugada
 from src.partida.domain.partida import Partida
 from src.shared.dbmodels.dbmodels import *
 
-from sqlalchemy.orm import Session, session
+from sqlalchemy.orm import Session
 
 from src.shared.dbmodels.dbmodels import (
     Partida as PartidaModel,
