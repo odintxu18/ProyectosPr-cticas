@@ -4,9 +4,9 @@ from dataclasses import dataclass
 
 @dataclass
 class Partida:
-    id: int
-    id_jugador_x: int
-    id_jugador_o: int
+    id: str
+    id_jugador_x: str
+    id_jugador_o: str
     fecha_inicio: datetime
     fecha_final: datetime
-    id_ganador: int
+    id_ganador: str

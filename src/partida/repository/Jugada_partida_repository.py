@@ -1,6 +1,8 @@
-from src.shared.dbmodels.dbmodels import Partida, Jugada
 from abc import ABC, abstractmethod
 from typing import List, Optional
+
+from src.partida.domain.jugada import Jugada
+from src.partida.domain.partida import Partida
 
 
 class IPartidaJugadaRepository(ABC):
