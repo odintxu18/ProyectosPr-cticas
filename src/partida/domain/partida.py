@@ -8,5 +8,5 @@ class Partida:
     id_jugador_x: str
     id_jugador_o: str
     fecha_inicio: datetime
-    fecha_final: datetime
+    fecha_fin: datetime
     id_ganador: str

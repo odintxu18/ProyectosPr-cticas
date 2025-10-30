@@ -36,3 +36,13 @@ def jugada_mother(partida: Partida, jugador: Jugador, turno=1, fila=0, columna=0
         columna=columna,
         fecha_jugada=datetime.now(),
     )
+
+
+@staticmethod
+def nombre_mother():
+    return f"Jugador_{uuid.uuid4().hex[:6]}"
+
+
+@staticmethod
+def correo_mother():
+    return f"Correo_{uuid.uuid4().hex[:6]}@testing.com"
