@@ -19,11 +19,6 @@ class UnitOfWorkSQLAlchemy(IUnitOfWork):
         self._repository_container_class = repository_container_class
         self.repositories = None
 
-    def __enter__(self):
-
-        self.connect()
-        return self
-
     def __exit__(self, exc_type, exc_val, exc_tb):
 
         if exc_type is None:
@@ -40,6 +35,7 @@ class UnitOfWorkSQLAlchemy(IUnitOfWork):
 
     def disconnect(self):
         if self._session:
+
             self._session.close()
 
     def commit(self):
