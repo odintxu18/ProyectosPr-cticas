@@ -8,6 +8,7 @@ from src.partida.repository.sql_alchemy_jugada_partida_repository import (
 
 class RepositoryContainer:
     def __init__(self, session):
+
         self._repositories = {
             "jugador": JugadorRepositorySQLAlchemy,
             "partida": PartidaJugadaRepositorySQLAlchemy,

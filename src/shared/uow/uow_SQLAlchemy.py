@@ -19,9 +19,22 @@ class UnitOfWorkSQLAlchemy(IUnitOfWork):
         self._repository_container_class = repository_container_class
         self.repositories = None
 
+    def __enter__(self):
+
+        self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+
+        if exc_type is None:
+
+            self.commit()
+        else:
+            self.rollback()
+        self.disconnect()
+
     def connect(self):
         self._session = self.get_new_session()
-
         repository_storage = self._repository_container_class(self._session)
         self.repositories = repository_storage.get_repositories()
 
@@ -32,6 +45,7 @@ class UnitOfWorkSQLAlchemy(IUnitOfWork):
     def commit(self):
         if self._session:
             self._session.commit()
+            self._committed = True
 
     def rollback(self):
         if self._session:
@@ -40,7 +54,8 @@ class UnitOfWorkSQLAlchemy(IUnitOfWork):
     def get_repository(self, repository_key: str):
         if not self.repositories:
             raise RuntimeError("Repositories not connected yet. Call connect() first.")
-        repo = getattr(self.repositories, repository_key, None)
+
+        repo = self.repositories.get(repository_key)
         if not repo:
             raise KeyError(f"Repository '{repository_key}' not found")
         return repo
