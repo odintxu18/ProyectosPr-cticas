@@ -11,7 +11,7 @@ from src.shared.dbmodels.dbmodels import (
 from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
 
 
-class PartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository):
+class FakePartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository):
 
     def __init__(self, session: Session):
         self.session = session

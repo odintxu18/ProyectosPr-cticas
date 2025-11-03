@@ -11,7 +11,7 @@ class IJugadorRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, jugador_id: int) -> Optional[Jugador]:
+    def get_by_id(self, jugador_id: str) -> Optional[Jugador]:
         pass
 
     @abstractmethod
@@ -27,5 +27,5 @@ class IJugadorRepository(ABC):
         pass
 
     @abstractmethod
-    def delete(self, jugador: Jugador) -> None:
+    def delete(self, jugador_id: str) -> None:
         pass

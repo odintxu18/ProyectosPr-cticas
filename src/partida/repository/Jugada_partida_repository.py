@@ -11,7 +11,7 @@ class IPartidaJugadaRepository(ABC):
         pass
 
     @abstractmethod
-    def obtener_partida_por_id(self, partida_id: int) -> Optional[Partida]:
+    def obtener_partida_por_id(self, partida_id: str) -> Optional[Partida]:
         pass
 
     @abstractmethod
