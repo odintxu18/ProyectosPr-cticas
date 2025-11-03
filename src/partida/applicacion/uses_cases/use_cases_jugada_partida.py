@@ -16,6 +16,8 @@ def crear_partida(
         id_jugador_x=jugador_x.id,
         id_jugador_o=jugador_o.id,
         fecha_inicio=datetime.now(),
+        fecha_fin=None,
+        id_ganador=None,
     )
     repo_partida.agregar_partida(partida)
 

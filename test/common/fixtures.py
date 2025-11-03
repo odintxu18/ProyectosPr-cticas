@@ -5,6 +5,7 @@ from _pytest.fixtures import fixture
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
+from src.juego.handler.handler_jugador import JugadorHandler
 from src.juego.repository.sql_alchemy_jugador_repository import (
     JugadorRepositorySQLAlchemy,
 )
@@ -12,6 +13,7 @@ from test.common.FakeRepositoryJugadaPartida import (
     FakePartidaJugadaRepositorySQLAlchemy,
 )
 from test.common.FakeRepositoryJugador import FakeJugadorRepositorySQLAlchemy
+from test.common.FakeUnitofWork import FakeUnitOfWork
 from test.common.object_mother import (
     jugador_mother,
     partida_mother,
@@ -81,3 +83,14 @@ def nombre():
 @pytest.fixture
 def correo():
     return correo_mother()
+
+
+@pytest.fixture
+def fake_uow(fake_repo_jugadores):
+    return FakeUnitOfWork(fake_repo_jugadores)
+
+
+@pytest.fixture
+def jugador_handler(fake_uow):
+
+    return JugadorHandler(fake_uow)
