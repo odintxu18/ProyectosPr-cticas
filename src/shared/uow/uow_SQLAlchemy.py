@@ -13,35 +13,27 @@ class UnitOfWorkSQLAlchemy(IUnitOfWork):
         repository_container_class: Type[RepositoryContainer],
         session_factory=SessionLocal,
     ):
-
         self._session_factory = session_factory
         self._session: Session = None
         self._repository_container_class = repository_container_class
         self.repositories = None
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-
-        if exc_type is None:
-
-            self.commit()
-        else:
-            self.rollback()
-        self.disconnect()
 
     def connect(self):
         self._session = self.get_new_session()
         repository_storage = self._repository_container_class(self._session)
         self.repositories = repository_storage.get_repositories()
 
-    def disconnect(self):
+    def disconnect(self, exc_type):
+        if exc_type is None:
+            self.commit()
+        else:
+            self.rollback()
         if self._session:
-
             self._session.close()
 
     def commit(self):
         if self._session:
             self._session.commit()
-            self._committed = True
 
     def rollback(self):
         if self._session:
@@ -58,6 +50,3 @@ class UnitOfWorkSQLAlchemy(IUnitOfWork):
 
     def get_new_session(self):
         return self._session_factory()
-
-    def close(self):
-        self.disconnect()

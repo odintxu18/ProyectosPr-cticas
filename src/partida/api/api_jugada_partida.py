@@ -9,7 +9,7 @@ from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
 from src.shared.uow.SQLAlchemy_repositories import RepositoryContainer
 from src.juego.repository.jugador_repository import IJugadorRepository
 from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
-from src.partida.applicacion.uses_cases.use_cases_jugada_partida import (
+from src.partida.application.use_cases_jugada_partida import (
     crear_partida,
     registrar_jugada,
     terminar_partida,
