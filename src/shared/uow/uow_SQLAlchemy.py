@@ -3,9 +3,6 @@ from sqlalchemy.orm import Session
 from src.shared.dbmodels.database import SessionLocal
 from src.shared.sql_alchemy_interface import SqlAlchemyInterface
 from src.shared.uow.unit_of_work import IUnitOfWork
-from src.shared.uow.SQLAlchemy_repositories import (
-    RepositoryContainer,
-)
 
 
 class UnitOfWorkSQLAlchemy(IUnitOfWork):
