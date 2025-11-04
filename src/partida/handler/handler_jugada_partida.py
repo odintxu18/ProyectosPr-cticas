@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
+from src.partida.repository.jugador_repository import IJugadorRepository
 from src.partida.settings.dependencies import partida_dependencies
 from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
 from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
@@ -28,13 +29,13 @@ def crear_partida_endpoint(datos_partida: dict):
     return {"mensaje": "Partida creada correctamente"}
 
 
-@app_partida.post("/jugada")
+@app_partida.post("/jugada", status_code=201)
 def registrar_jugada_endpoint(datos_jugada: dict):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
         registrar_jugada(
             datos_jugada["id_partida"],
-            datos_jugada["id_jugador"],
+            datos_jugada["email_jugador"],
             datos_jugada["turno"],
             datos_jugada["fila"],
             datos_jugada["columna"],
@@ -43,25 +44,30 @@ def registrar_jugada_endpoint(datos_jugada: dict):
     return {"mensaje": "Jugada registrada correctamente"}
 
 
-@app_partida.post("/terminar")
+@app_partida.post("/terminar", status_code=201)
 def terminar_partida_endpoint(datos_partida_terminada: dict):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
         partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
         resultado = terminar_partida(
             datos_partida_terminada["id_partida"],
-            datos_partida_terminada["id_ganador"],
+            datos_partida_terminada["email_ganador"],
             partida_repo,
         )
     return {"terminada": resultado}
 
 
-@app_partida.get("/jugador/{id_jugador}")
-def listar_partidas_de_jugador_endpoint(datos_jugador: dict):
-
+@app_partida.get("/jugador/{email_jugador}")
+def listar_partidas_de_jugador_endpoint(email_jugador: str):
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
         partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
-        partidas = listar_partidas_jugador(datos_jugador["id_jugador"], partida_repo)
+        jugador_repo: IJugadorRepository = uow.get_repository("jugador")
+
+        jugador = jugador_repo.get_jugador_by_email(email_jugador)
+        if not jugador:
+            raise HTTPException(status_code=404, detail="Jugador no encontrado")
+
+        partidas = listar_partidas_jugador(jugador.id, partida_repo)
     return partidas
 
 

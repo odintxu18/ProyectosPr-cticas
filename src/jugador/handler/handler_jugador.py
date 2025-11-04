@@ -24,13 +24,13 @@ def crear_jugador(datos_jugador: dict):
     return {"mensaje": "Jugador creado correctamente"}
 
 
-@app_jugador.put("/{jugador_id}")
+@app_jugador.put("/", status_code=200)
 def actualizar_jugador(datos_antiguos: dict, datos_nuevos: dict):
 
     vaidate_email(datos_antiguos["correo"])
     with UnitOfWorkSQLAlchemy(jugador_dependencies) as uow:
         jugador_repo: IJugadorRepository = uow.get_repository("jugador")
-        jugador = jugador_repo.get_jugador_by_email(datos_antiguos["email"])
+        jugador = jugador_repo.get_jugador_by_email(datos_antiguos["correo"])
         if not jugador:
             raise HTTPException(status_code=404, detail="Jugador no encontrado")
         actualiazar_jugador(
@@ -39,12 +39,12 @@ def actualizar_jugador(datos_antiguos: dict, datos_nuevos: dict):
     return {"mensaje": "Jugador actualizado correctamente"}
 
 
-@app_jugador.delete("/{jugador_id}")
+@app_jugador.delete("/", status_code=200)
 def eliminar_jugador(datos_jugador: dict):
 
     with UnitOfWorkSQLAlchemy(jugador_dependencies) as uow:
         jugador_repo: IJugadorRepository = uow.get_repository("jugador")
-        jugador = jugador_repo.get_jugador_by_email(datos_jugador["email"])
+        jugador = jugador_repo.get_jugador_by_email(datos_jugador["correo"])
         if not jugador:
             raise HTTPException(status_code=404, detail="Jugador no encontrado")
         delete_jugador(jugador, jugador_repo)

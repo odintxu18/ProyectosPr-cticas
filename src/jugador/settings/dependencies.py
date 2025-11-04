@@ -1,7 +1,7 @@
-from src.partida.repository.sql_alchemy_jugador_repository import (
-    SQLAlchemyJugadorRepository,
+from src.jugador.repository.sql_alchemy_jugador_repository import (
+    JugadorRepositorySQLAlchemy,
 )
 
 jugador_dependencies = {
-    "jugador": SQLAlchemyJugadorRepository,
+    "jugador": JugadorRepositorySQLAlchemy,
 }

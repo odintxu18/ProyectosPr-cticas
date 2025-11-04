@@ -1,0 +1,33 @@
+Crear Jugador
+{ "nombre" : "el nombre", "correo" : "el correo"}
+Actualizar jugador
+{
+  "datos_antiguos": {
+    "correo": "cereza@example.com"
+  },
+  "datos_nuevos": {
+    "nombre": "Carlos Actualizado",
+    "correo": "carlos.nuevo@example.com"
+  }
+}
+Borrar jugador
+{ "correo" : "correo"}
+
+{ "nombre" : "nombre1", "correo" : "correo1@example.com"} { "nombre" : "nombre2", "correo" : "correo2@example.com"}
+
+Crear partida
+{"jugador_o_email" : "correo2@example.com", "jugador_x_email" : "correo1@example.com"} '11fe677a-789e-48c6-bd0f-ec3ad636c490
+Registrar jugada
+{
+    "id_partida": "'11fe677a-789e-48c6-bd0f-ec3ad636c490",
+   "email_jugador" : "correo1@example.com",
+    "turno": 1,
+    "fila" : 1,
+    "columna" : 1
+}
+Terminar partida
+{
+    "id_partida": "'11fe677a-789e-48c6-bd0f-ec3ad636c490",
+   "email_ganador" : "correo1@example.com"
+
+}

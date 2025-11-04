@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime, timezone
 
-from src.jugador.domain.jugador import Jugador
 from src.partida.repository.jugador_repository import IJugadorRepository
 from src.partida.domain.jugada import Jugada
 from src.partida.domain.partida import Partida
