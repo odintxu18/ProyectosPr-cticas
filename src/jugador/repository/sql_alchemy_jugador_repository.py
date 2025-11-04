@@ -41,8 +41,12 @@ class JugadorRepositorySQLAlchemy(IJugadorRepository):
             )
         return None
 
-    def get_by_nombre(self, nombre_jugador: str) -> Jugador:
-        jugador_model = self.session.get(JugadorModel, nombre_jugador)
+    def get_jugador_by_email(self, email: str) -> Jugador | None:
+        jugador_model = (
+            self.session.query(JugadorModel)
+            .filter(JugadorModel.correo == email)
+            .first()
+        )
         if jugador_model:
             return Jugador(
                 id=jugador_model.id,

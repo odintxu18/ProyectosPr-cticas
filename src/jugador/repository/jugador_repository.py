@@ -29,3 +29,6 @@ class IJugadorRepository(ABC):
     @abstractmethod
     def delete(self, jugador_id: str) -> None:
         pass
+
+    def get_jugador_by_email(self, jugador_email: str) -> Optional[Jugador]:
+        pass

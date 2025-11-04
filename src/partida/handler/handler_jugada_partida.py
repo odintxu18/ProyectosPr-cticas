@@ -1,7 +1,4 @@
-from sqlite3 import IntegrityError
-
-import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from src.partida.settings.dependencies import partida_dependencies
 from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
@@ -32,50 +29,47 @@ def crear_partida_endpoint(datos_partida: dict):
 
 
 @router.post("/jugada")
-def registrar_jugada_endpoint(jugada: JugadaCreate):
+def registrar_jugada_endpoint(datos_jugada: dict):
 
-    try:
-        with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
-            registrar_jugada(
-                jugada.id_partida,
-                jugada.id_jugador,
-                jugada.turno,
-                jugada.fila,
-                jugada.columna,
-                uow.get_repository("partida"),
-            )
-        return {"mensaje": "Jugada registrada correctamente"}
-    except Exception as e:
-        raise manejar_error(e, "registrar_partida")
+    with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
+        registrar_jugada(
+            datos_jugada["id_partida"],
+            datos_jugada["id_jugador"],
+            datos_jugada["turno"],
+            datos_jugada["fila"],
+            datos_jugada["columna"],
+            uow.get_repository("partida"),
+        )
+    return {"mensaje": "Jugada registrada correctamente"}
 
 
 @router.post("/terminar")
-def terminar_partida_endpoint(data: TerminarPartida):
+def terminar_partida_endpoint(datos_partida_terminada: dict):
 
-    try:
-        with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
-            partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
-            resultado = terminar_partida(data.id_partida, data.id_ganador, partida_repo)
-        return {"terminada": resultado}
-    except Exception as e:
-        raise manejar_error(e, "terminar_partida")
+    with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
+        partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
+        resultado = terminar_partida(
+            datos_partida_terminada["id_partida"],
+            datos_partida_terminada["id_ganador"],
+            partida_repo,
+        )
+    return {"terminada": resultado}
 
 
 @router.get("/jugador/{id_jugador}")
-def listar_partidas_de_jugador_endpoint(id_jugador: str):
+def listar_partidas_de_jugador_endpoint(datos_jugador: dict):
 
-    try:
-        with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
-            partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
-            partidas = listar_partidas_jugador(id_jugador, partida_repo)
-        return partidas
-    except Exception as e:
-        raise manejar_error(e, "listar_partidas")
+    with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
+        partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
+        partidas = listar_partidas_jugador(datos_jugador["id_jugador"], partida_repo)
+    return partidas
 
 
 @router.get("/{id_partida}/jugadas")
-def obtener_jugadas_de_partida_endpoint(id_partida: str):
+def obtener_jugadas_de_partida_endpoint(datos_partida: str):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
-        jugadas = obtener_jugadas_por_partida(id_partida, uow.get_repository("partida"))
+        jugadas = obtener_jugadas_por_partida(
+            datos_partida["id_partida"], uow.get_repository("partida")
+        )
     return jugadas
