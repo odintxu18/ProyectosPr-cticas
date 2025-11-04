@@ -3,7 +3,7 @@ from http import client
 
 from pydantic.v1 import validate_email
 
-from src.juego.applicacion.use_cases import use_cases_jugador
+from src.jugador.applicacion.use_cases import use_cases_jugador
 
 from src.partida.domain.jugada import Jugada
 from src.partida.domain.partida import Partida

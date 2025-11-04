@@ -1,7 +1,7 @@
 import re
 import uuid
 from ..common.fixtures import *
-from src.juego.domain.jugador import Jugador
+from src.jugador.domain.jugador import Jugador
 
 
 def test_new_player(nombre, correo, fake_repo_jugadores):

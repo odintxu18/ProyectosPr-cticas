@@ -7,8 +7,8 @@ import logging
 
 from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
 from src.shared.uow.SQLAlchemy_repositories import RepositoryContainer
-from src.juego.repository.jugador_repository import IJugadorRepository
-from src.juego.applicacion.use_cases.use_cases_jugador import (
+from src.jugador.repository.jugador_repository import IJugadorRepository
+from src.jugador.applicacion.use_cases.use_cases_jugador import (
     new_player,
     vaidate_email,
     actualiazar_jugador,

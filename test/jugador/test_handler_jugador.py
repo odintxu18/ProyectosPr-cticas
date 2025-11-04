@@ -1,7 +1,7 @@
-from src.juego.handler import handler_jugador
+from src.jugador.handler import handler_jugador
 from test.common.FakeUnitofWork import FakeUnitOfWork
 from ..common.fixtures import *
-from src.juego.domain.jugador import Jugador
+from src.jugador.domain.jugador import Jugador
 
 
 def test_crear_jugador(fake_repo_jugadores, nombre, correo):

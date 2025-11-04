@@ -5,8 +5,8 @@ from _pytest.fixtures import fixture
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from src.juego.handler.handler_jugador import JugadorHandler
-from src.juego.repository.sql_alchemy_jugador_repository import (
+from src.jugador.handler.handler_jugador import JugadorHandler
+from src.jugador.repository.sql_alchemy_jugador_repository import (
     JugadorRepositorySQLAlchemy,
 )
 from test.common.FakeRepositoryJugadaPartida import (

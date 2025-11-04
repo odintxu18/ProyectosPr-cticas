@@ -1,6 +1,6 @@
 import pytest
 
-from src.juego.domain.juego import Juego
+from src.jugador.domain.juego import Juego
 
 
 @pytest.fixture

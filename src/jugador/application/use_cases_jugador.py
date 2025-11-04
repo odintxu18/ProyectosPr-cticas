@@ -1,7 +1,7 @@
 import uuid
 import re
-from src.juego.domain.jugador import Jugador
-from src.juego.repository.jugador_repository import IJugadorRepository
+from src.jugador.domain.jugador import Jugador
+from src.jugador.repository.jugador_repository import IJugadorRepository
 
 
 def new_player(nombre: str, correo: str, jugador_repo: IJugadorRepository):
