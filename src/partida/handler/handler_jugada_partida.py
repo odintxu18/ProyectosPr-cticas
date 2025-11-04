@@ -1,3 +1,14 @@
+from sqlite3 import IntegrityError
+
+import logging
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.exc import SQLAlchemyError
+
+from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
+from src.shared.uow.SQLAlchemy_repositories import RepositoryContainer
+from src.juego.repository.jugador_repository import IJugadorRepository
+from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
 from src.partida.applicacion.uses_cases.use_cases_jugada_partida import (
     crear_partida,
     registrar_jugada,
@@ -5,44 +16,129 @@ from src.partida.applicacion.uses_cases.use_cases_jugada_partida import (
     listar_partidas_jugador,
     obtener_jugadas_por_partida,
 )
-from src.juego.repository.jugador_repository import IJugadorRepository
-from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
-from src.shared.uow.unit_of_work import IUnitOfWork
+
+router = APIRouter(prefix="/partidas", tags=["Partidas"])
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
-class PartidaHandler:
-    def __init__(self, uow: IUnitOfWork):
-        self.uow = uow
+class PartidaCreate(BaseModel):
+    id_jugador_x: str
+    id_jugador_o: str
 
-    def crear_partida(self, id_jugador_x: str, id_jugador_o: str):
-        jugador_repo: IJugadorRepository = self.uow.get_repository("jugador")
-        repo_partida: IPartidaJugadaRepository = self.uow.get_repository("partida")
 
-        jugador_x = jugador_repo.get_by_id(id_jugador_x)
-        jugador_o = jugador_repo.get_by_id(id_jugador_o)
-        if not jugador_x or not jugador_o:
-            raise Exception("Jugadores no válidos")
+class JugadaCreate(BaseModel):
+    id_partida: str
+    id_jugador: str
+    turno: int
+    fila: int
+    columna: int
 
-        crear_partida(jugador_x, jugador_o, repo_partida)
-        self.uow.commit()
 
-    def registrar_jugada(
-        self, id_partida: str, id_jugador: str, turno: int, fila: int, columna: int
-    ):
-        repo_jugada: IPartidaJugadaRepository = self.uow.get_repository("jugada")
-        registrar_jugada(id_partida, id_jugador, turno, fila, columna, repo_jugada)
-        self.uow.commit()
+class TerminarPartida(BaseModel):
+    id_partida: str
+    id_ganador: str
 
-    def terminar_partida(self, id_partida: str, id_ganador: str):
-        repo_partida: IPartidaJugadaRepository = self.uow.get_repository("partida")
-        resultado = terminar_partida(id_partida, id_ganador, repo_partida)
-        self.uow.commit()
-        return resultado
 
-    def listar_partidas_de_jugador(self, id_jugador: str):
-        repo_partida: IPartidaJugadaRepository = self.uow.get_repository("partida")
-        return listar_partidas_jugador(id_jugador, repo_partida)
+def manejar_error(e: Exception, contexto: str = ""):
+    """Centraliza el manejo de errores."""
+    logger.error(f"[{contexto}] Error: {e}")
 
-    def obtener_jugadas_de_partida(self, id_partida: str):
-        repo_jugada: IPartidaJugadaRepository = self.uow.get_repository("jugada")
-        return obtener_jugadas_por_partida(id_partida, repo_jugada)
+    if isinstance(e, HTTPException):
+        raise e
+
+    elif isinstance(e, IntegrityError):
+        raise HTTPException(
+            status_code=409,
+            detail=f"Conflicto de integridad en base de datos ({contexto})",
+        )
+
+    elif isinstance(e, ValueError):
+        raise HTTPException(status_code=400, detail=str(e))
+
+    elif isinstance(e, KeyError):
+        raise HTTPException(
+            status_code=404, detail=f"Recurso no encontrado ({contexto})"
+        )
+
+    else:
+        raise HTTPException(
+            status_code=500, detail=f"Error inesperado: {str(e) or 'Desconocido'}"
+        )
+
+
+@router.post("/", status_code=201)
+def crear_partida_endpoint(datos: PartidaCreate):
+
+    try:
+        with UnitOfWorkSQLAlchemy(RepositoryContainer) as uow:
+            jugador_repo: IJugadorRepository = uow.get_repository("jugador")
+            partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
+
+            jugador_x = jugador_repo.get_by_id(datos.id_jugador_x)
+            jugador_o = jugador_repo.get_by_id(datos.id_jugador_o)
+
+            if not jugador_x or not jugador_o:
+                raise HTTPException(status_code=400, detail="Jugadores no válidos")
+
+            crear_partida(jugador_x, jugador_o, partida_repo)
+
+        return {"mensaje": "Partida creada correctamente"}
+    except Exception as e:
+        raise manejar_error(e, "crear_partida")
+
+
+@router.post("/jugada")
+def registrar_jugada_endpoint(jugada: JugadaCreate):
+
+    try:
+        with UnitOfWorkSQLAlchemy(RepositoryContainer) as uow:
+            partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
+            registrar_jugada(
+                jugada.id_partida,
+                jugada.id_jugador,
+                jugada.turno,
+                jugada.fila,
+                jugada.columna,
+                partida_repo,
+            )
+        return {"mensaje": "Jugada registrada correctamente"}
+    except Exception as e:
+        raise manejar_error(e, "registrar_partida")
+
+
+@router.post("/terminar")
+def terminar_partida_endpoint(data: TerminarPartida):
+
+    try:
+        with UnitOfWorkSQLAlchemy(RepositoryContainer) as uow:
+            partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
+            resultado = terminar_partida(data.id_partida, data.id_ganador, partida_repo)
+        return {"terminada": resultado}
+    except Exception as e:
+        raise manejar_error(e, "terminar_partida")
+
+
+@router.get("/jugador/{id_jugador}")
+def listar_partidas_de_jugador_endpoint(id_jugador: str):
+
+    try:
+        with UnitOfWorkSQLAlchemy(RepositoryContainer) as uow:
+            partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
+            partidas = listar_partidas_jugador(id_jugador, partida_repo)
+        return partidas
+    except Exception as e:
+        raise manejar_error(e, "listar_partidas")
+
+
+@router.get("/{id_partida}/jugadas")
+def obtener_jugadas_de_partida_endpoint(id_partida: str):
+
+    try:
+        with UnitOfWorkSQLAlchemy(RepositoryContainer) as uow:
+            jugada_repo: IPartidaJugadaRepository = uow.get_repository("partida")
+            jugadas = obtener_jugadas_por_partida(id_partida, jugada_repo)
+        return jugadas
+    except Exception as e:
+        raise manejar_error(e, "obtener_jugada")

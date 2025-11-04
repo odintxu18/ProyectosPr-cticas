@@ -33,7 +33,7 @@ class UnitOfWorkSQLAlchemy(IUnitOfWork):
         repository_storage = self._repository_container_class(self._session)
         self.repositories = repository_storage.get_repositories()
 
-    def disconnect(self):
+    def disconnect(self, exc_type):
         if self._session:
 
             self._session.close()
@@ -41,7 +41,6 @@ class UnitOfWorkSQLAlchemy(IUnitOfWork):
     def commit(self):
         if self._session:
             self._session.commit()
-            self._committed = True
 
     def rollback(self):
         if self._session:

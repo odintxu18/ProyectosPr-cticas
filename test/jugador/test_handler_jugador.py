@@ -1,4 +1,4 @@
-from src.juego.handler.handler_jugador import JugadorHandler
+from src.juego.handler import handler_jugador
 from test.common.FakeUnitofWork import FakeUnitOfWork
 from ..common.fixtures import *
 from src.juego.domain.jugador import Jugador
