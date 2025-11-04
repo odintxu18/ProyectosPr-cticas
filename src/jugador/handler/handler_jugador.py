@@ -14,7 +14,7 @@ from src.jugador.application.use_cases_jugador import (
 app_jugador = APIRouter(prefix="/jugadores", tags=["Jugadores"])
 
 
-@router.post("/", status_code=201)
+@app_jugador.post("/", status_code=201)
 def crear_jugador(datos_jugador: dict):
 
     vaidate_email(datos_jugador["correo"])
@@ -24,7 +24,7 @@ def crear_jugador(datos_jugador: dict):
     return {"mensaje": "Jugador creado correctamente"}
 
 
-@router.put("/{jugador_id}")
+@app_jugador.put("/{jugador_id}")
 def actualizar_jugador(datos_antiguos: dict, datos_nuevos: dict):
 
     vaidate_email(datos_antiguos["correo"])
@@ -39,7 +39,7 @@ def actualizar_jugador(datos_antiguos: dict, datos_nuevos: dict):
     return {"mensaje": "Jugador actualizado correctamente"}
 
 
-@router.delete("/{jugador_id}")
+@app_jugador.delete("/{jugador_id}")
 def eliminar_jugador(datos_jugador: dict):
 
     with UnitOfWorkSQLAlchemy(jugador_dependencies) as uow:

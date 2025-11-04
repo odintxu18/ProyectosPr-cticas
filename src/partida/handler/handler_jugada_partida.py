@@ -14,7 +14,7 @@ from src.partida.application.use_cases_jugada_partida import (
 app_partida = APIRouter(prefix="/partidas", tags=["Partidas"])
 
 
-@router.post("/", status_code=201)
+@app_partida.post("/", status_code=201)
 def crear_partida_endpoint(datos_partida: dict):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
@@ -28,7 +28,7 @@ def crear_partida_endpoint(datos_partida: dict):
     return {"mensaje": "Partida creada correctamente"}
 
 
-@router.post("/jugada")
+@app_partida.post("/jugada")
 def registrar_jugada_endpoint(datos_jugada: dict):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
@@ -43,7 +43,7 @@ def registrar_jugada_endpoint(datos_jugada: dict):
     return {"mensaje": "Jugada registrada correctamente"}
 
 
-@router.post("/terminar")
+@app_partida.post("/terminar")
 def terminar_partida_endpoint(datos_partida_terminada: dict):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
@@ -56,7 +56,7 @@ def terminar_partida_endpoint(datos_partida_terminada: dict):
     return {"terminada": resultado}
 
 
-@router.get("/jugador/{id_jugador}")
+@app_partida.get("/jugador/{id_jugador}")
 def listar_partidas_de_jugador_endpoint(datos_jugador: dict):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
@@ -65,7 +65,7 @@ def listar_partidas_de_jugador_endpoint(datos_jugador: dict):
     return partidas
 
 
-@router.get("/{id_partida}/jugadas")
+@app_partida.get("/{id_partida}/jugadas")
 def obtener_jugadas_de_partida_endpoint(datos_partida: str):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
