@@ -11,7 +11,7 @@ from src.partida.application.use_cases_jugada_partida import (
     obtener_jugadas_por_partida,
 )
 
-router = APIRouter(prefix="/partidas", tags=["Partidas"])
+app_partida = APIRouter(prefix="/partidas", tags=["Partidas"])
 
 
 @router.post("/", status_code=201)

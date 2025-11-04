@@ -11,7 +11,7 @@ from src.jugador.application.use_cases_jugador import (
     delete_jugador,
 )
 
-router = APIRouter(prefix="/jugadores", tags=["Jugadores"])
+app_jugador = APIRouter(prefix="/jugadores", tags=["Jugadores"])
 
 
 @router.post("/", status_code=201)
