@@ -12,12 +12,13 @@ def crear_partida(
     jugador_o_email: str,
     repo_partida: IPartidaJugadaRepository,
     repo_jugador: IJugadorRepository,
-):
+) -> str:
 
     jugador_x = repo_jugador.get_jugador_by_email(jugador_x_email)
     jugador_o = repo_jugador.get_jugador_by_email(jugador_o_email)
+    id_partida = str(uuid.uuid4())
     partida = Partida(
-        id=str(uuid.uuid4()),
+        id=id_partida,
         id_jugador_x=jugador_x.id,
         id_jugador_o=jugador_o.id,
         fecha_inicio=datetime.now(),
@@ -25,6 +26,7 @@ def crear_partida(
         id_ganador=None,
     )
     repo_partida.agregar_partida(partida)
+    return id_partida
 
 
 def registrar_jugada(

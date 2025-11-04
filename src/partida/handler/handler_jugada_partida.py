@@ -19,14 +19,14 @@ app_partida = APIRouter(prefix="/partidas", tags=["Partidas"])
 def crear_partida_endpoint(datos_partida: dict):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
-        crear_partida(
+        id_partida = crear_partida(
             datos_partida["jugador_x_email"],
             datos_partida["jugador_o_email"],
             uow.get_repository("partida"),
             uow.get_repository("jugador"),
         )
 
-    return {"mensaje": "Partida creada correctamente"}
+    return {"id_partida": id_partida}
 
 
 @app_partida.post("/jugada", status_code=201)
