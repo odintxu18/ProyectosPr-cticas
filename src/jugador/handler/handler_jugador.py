@@ -3,13 +3,13 @@ from fastapi import APIRouter, HTTPException
 
 from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
 from src.jugador.settings.dependencies import jugador_dependencies
-from src.jugador.repository.jugador_repository import IJugadorRepository
 from src.jugador.application.use_cases_jugador import (
     new_player,
     actualiazar_jugador,
     delete_jugador,
     InvalidEmailException,
     JugadorNotFound,
+    get_jugador_by_id,
 )
 
 app_jugador = APIRouter(prefix="/jugadores", tags=["Jugadores"])
@@ -44,9 +44,21 @@ def actualizar_jugador(datos_jugador: dict):
 @app_jugador.delete("/", status_code=200)
 def eliminar_jugador(datos_jugador: dict):
     with UnitOfWorkSQLAlchemy(jugador_dependencies) as uow:
-        jugador_repo: IJugadorRepository = uow.get_repository("jugador")
-        jugador = jugador_repo.get_jugador_by_email(datos_jugador["correo"])
-        if not jugador:
+        if not datos_jugador:
             raise HTTPException(status_code=404, detail="Jugador no encontrado")
-        delete_jugador(jugador, jugador_repo)
+        delete_jugador(datos_jugador, uow.get_repository("jugador"))
     return {"mensaje": "Jugador eliminado correctamente"}
+
+
+@app_jugador.get("/jugador/{id_jugador}", status_code=200)
+def get_jugador(id_jugador: str):
+    with UnitOfWorkSQLAlchemy(jugador_dependencies) as uow:
+
+        try:
+            jugador = get_jugador_by_id(id_jugador, uow.get_repository("jugador"))
+        except JugadorNotFound:
+            raise HTTPException(status_code=404, detail="Jugador no encontrado")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    return jugador

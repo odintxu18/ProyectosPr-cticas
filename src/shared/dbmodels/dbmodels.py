@@ -1,6 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, Integer, DateTime, ForeignKey, String
+
+from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
 from src.shared.dbmodels.database import Base
 from sqlalchemy.orm import relationship
 

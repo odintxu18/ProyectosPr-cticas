@@ -10,6 +10,7 @@ from src.partida.application.use_cases_jugada_partida import (
     terminar_partida,
     listar_partidas_jugador,
     obtener_jugadas_por_partida,
+    obtener_jugada_por_id,
 )
 
 app_partida = APIRouter(prefix="/partidas", tags=["Partidas"])
@@ -35,7 +36,7 @@ def registrar_jugada_endpoint(datos_jugada: dict):
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
         registrar_jugada(
             datos_jugada["id_partida"],
-            datos_jugada["email_jugador"],
+            datos_jugada["id_jugador"],
             datos_jugada["turno"],
             datos_jugada["fila"],
             datos_jugada["columna"],
@@ -60,22 +61,35 @@ def terminar_partida_endpoint(datos_partida_terminada: dict):
 @app_partida.get("/jugador/{email_jugador}")
 def listar_partidas_de_jugador_endpoint(email_jugador: str):
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
-        partida_repo: IPartidaJugadaRepository = uow.get_repository("partida")
-        jugador_repo: IJugadorRepository = uow.get_repository("jugador")
 
-        jugador = jugador_repo.get_jugador_by_email(email_jugador)
+        jugador = uow.get_repository("jugador").get_jugador_by_email(email_jugador)
         if not jugador:
             raise HTTPException(status_code=404, detail="Jugador no encontrado")
 
-        partidas = listar_partidas_jugador(jugador.id, partida_repo)
+        partidas = listar_partidas_jugador(jugador.id, uow.get_repository("partida"))
     return partidas
 
 
 @app_partida.get("/{id_partida}/jugadas")
-def obtener_jugadas_de_partida_endpoint(datos_partida: str):
-
+def obtener_jugadas_de_partida_endpoint(id_partida: str):
+    id_partida = id_partida.strip().replace("'", "")
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
-        jugadas = obtener_jugadas_por_partida(
-            datos_partida["id_partida"], uow.get_repository("partida")
-        )
+        jugadas = obtener_jugadas_por_partida(id_partida, uow.get_repository("partida"))
+        print(f"🔍 Recibido id_partida: {id_partida}")
+        print(f"🧩 Jugadas obtenidas: {jugadas}")
     return jugadas
+
+
+@app_partida.get("/{id_jugada}")
+def obtener_jugada_endpoint(id_jugada: str):
+    id_jugada = id_jugada.strip("'/")
+    with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
+        try:
+            jugada = obtener_jugada_por_id(id_jugada, uow.get_repository("partida"))
+            print(f"🧩 Jugadas obtenidas: {jugada}")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        print("id_jugada recibido:", id_jugada)
+        print("jugada obtenida:", jugada)
+
+        return jugada

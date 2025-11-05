@@ -29,8 +29,18 @@ def actualiazar_jugador(datos_jugador: dict, jugador_repo: IJugadorRepository):
     jugador_repo.update(jugador)
 
 
-def delete_jugador(jugador: Jugador, jugador_repo: IJugadorRepository):
-    jugador_repo.delete(jugador.id)
+def delete_jugador(datos_jugador: dict, jugador_repo: IJugadorRepository):
+    jugador_repo.delete(datos_jugador["id"])
+
+
+def get_jugador_by_id(id_jugador: str, jugador_repo) -> dict:
+
+    jugador = jugador_repo.get_by_id(id_jugador)
+    return {
+        "id": id_jugador,
+        "nombre": jugador.nombre,
+        "correo": jugador.correo,
+    }
 
 
 class InvalidEmailException(Exception):

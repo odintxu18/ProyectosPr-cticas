@@ -1,5 +1,5 @@
 Crear Jugador
-{ "nombre" : "el nombre", "correo" : "el correo"}
+{ "nombre" : "el nombre", "correo" : "el correo"} 1a4ce714-6e29-47ec-8391-440ad6a8a2e7
 Actualizar jugador
 {
   "datos_antiguos": {
@@ -31,3 +31,9 @@ Terminar partida
    "email_ganador" : "correo1@example.com"
 
 }
+
+
+05187b95-b9da-4cd3-9bf5-8a591176b951 { "nombre" : "real1", "correo" : "real1@example.com"}
+8833b79b-f52a-432d-9b95-e95bba19aa60 { "nombre" : "real2", "correo" : "real2@example.com"}
+96c1a261-5267-42c1-aed4-40b867a136d6 /partida
+ba548061-b4fb-4ddd-8972-7058631f8889 /jugada

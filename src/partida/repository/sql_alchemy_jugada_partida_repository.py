@@ -1,8 +1,6 @@
 from src.partida.domain.jugada import Jugada
 from src.partida.domain.partida import Partida
-from src.shared.dbmodels.dbmodels import *
 
-from sqlalchemy.orm import Session
 
 from src.shared.dbmodels.dbmodels import (
     Partida as PartidaModel,
@@ -50,7 +48,7 @@ class PartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository, SqlAlchemyInte
         return None
 
     def listar_partidas(self) -> list[Partida]:
-        partidas = self.session.query(Partida).all()
+        partidas = self.session.query(PartidaModel).all()
         return [
             Partida(
                 id=p.id,
@@ -124,6 +122,9 @@ class PartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository, SqlAlchemyInte
                 columna=jugada_model.columna,
                 fecha_jugada=jugada_model.fecha_jugada,
             )
+        print("id_jugada recibido:", id_jugada)
+        print("jugada obtenida:", Jugada)
+
         return None
 
     def obtener_jugadas_por_partida(self, id_partida: str) -> list[Jugada]:

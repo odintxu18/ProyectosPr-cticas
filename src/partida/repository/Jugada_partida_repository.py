@@ -27,11 +27,11 @@ class IPartidaJugadaRepository(ABC):
         pass
 
     @abstractmethod
-    def obtener_jugadas_por_partida(self, partida_id: int) -> List[Jugada]:
+    def obtener_jugadas_por_partida(self, partida_id: str) -> List[Jugada]:
         pass
 
     @abstractmethod
-    def obtener_jugada_por_id(self, jugada_id: int) -> Optional[Jugada]:
+    def obtener_jugada_por_id(self, jugada_id: str) -> Optional[Jugada]:
         pass
 
     @abstractmethod

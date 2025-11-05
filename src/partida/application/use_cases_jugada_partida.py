@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
+
 from src.partida.repository.jugador_repository import IJugadorRepository
 from src.partida.domain.jugada import Jugada
 from src.partida.domain.partida import Partida
@@ -40,8 +41,8 @@ def registrar_jugada(
 
     jugada = Jugada(
         id=str(uuid.uuid4()),
-        id_partida=id_partida,
-        id_jugador=id_jugador,
+        id_partida=id_partida.strip().replace("'", ""),
+        id_jugador=id_jugador.strip(" ' "),
         turno=turno,
         fila=fila,
         columna=columna,
@@ -72,34 +73,55 @@ def terminar_partida(
 def listar_partidas_jugador(
     id_jugador: str,
     repo_partida: IPartidaJugadaRepository,
-):
+) -> list[dict]:
     partidas = repo_partida.listar_partidas()
     return [
-        Partida(
-            id=p.id,
-            id_jugador_x=p.id_jugador_x,
-            id_jugador_o=p.id_jugador_o,
-            fecha_inicio=p.fecha_inicio,
-            fecha_fin=p.fecha_fin,
-            id_ganador=p.id_ganador,
-        )
+        {
+            "id": p.id,
+            "id_jugador_x": p.id_jugador_x,
+            "id_jugador_o": p.id_jugador_o,
+            "fecha_inicio": p.fecha_inicio,
+            "fecha_fin": p.fecha_fin,
+            "id_ganador": p.id_ganador,
+        }
         for p in partidas
         if p.id_jugador_x == id_jugador or p.id_jugador_o == id_jugador
     ]
 
 
-def obtener_jugadas_por_partida(id_partida: str, repo_jugada: IPartidaJugadaRepository):
+def obtener_jugadas_por_partida(
+    id_partida: str, repo_jugada: IPartidaJugadaRepository
+) -> list[dict]:
     jugadas = repo_jugada.obtener_jugadas_por_partida(id_partida)
     return [
-        Jugada(
-            id=j.id,
-            id_partida=j.id_partida,
-            id_jugador=j.id_jugador,
-            turno=j.turno,
-            fila=j.fila,
-            columna=j.columna,
-            fecha_jugada=j.fecha_jugada,
-        )
+        {
+            "id": j.id,
+            "id_partida": j.id_partida,
+            "id_jugador": j.id_jugador,
+            "turno": j.turno,
+            "fila": j.fila,
+            "columna": j.columna,
+            "fecha_jugada": j.fecha_jugada,
+        }
         for j in jugadas
         if j.id_partida == id_partida
     ]
+
+
+def obtener_partida_por_id(id_partida: str, repo_partida: IPartidaJugadaRepository):
+    partida = repo_partida.obtener_partida_por_id(id_partida)
+
+
+def obtener_jugada_por_id(
+    id_jugada: str, repo_jugada: IPartidaJugadaRepository
+) -> dict:
+    jugada = repo_jugada.obtener_jugada_por_id(id_jugada)
+    return {
+        "id": jugada.id,
+        "id_partida": jugada.id_partida,
+        "id_jugador": jugada.id_jugador,
+        "turno": jugada.turno,
+        "fila": jugada.fila,
+        "columna": jugada.columna,
+        "fecha_jugada": jugada.fecha_jugada,
+    }
