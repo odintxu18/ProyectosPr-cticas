@@ -1,19 +1,17 @@
-# src/persistance/repositories/jugador_repository_sqlalchemy.py
-from pygments.lexers import j
-from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from src.juego.domain.jugador import Jugador
+from src.jugador.domain.jugador import Jugador
 from src.shared.dbmodels.dbmodels import Jugador as JugadorModel
-from src.juego.repository.jugador_repository import IJugadorRepository
-from test import jugador
+from src.jugador.repository.jugador_repository import IJugadorRepository
+from src.shared.sql_alchemy_interface import SqlAlchemyInterface
+
 from src.shared.dbmodels.dbmodels import *
 
 
-class JugadorRepositorySQLAlchemy(IJugadorRepository):
+class JugadorRepositorySQLAlchemy(IJugadorRepository, SqlAlchemyInterface):
 
-    def __init__(self, session: Session):
-        self.session = session
+    def get_by_nombre(self, nombre: str) -> Optional[Jugador]:
+        pass
 
     def add(self, player: Jugador) -> Jugador:
 
@@ -41,8 +39,12 @@ class JugadorRepositorySQLAlchemy(IJugadorRepository):
             )
         return None
 
-    def get_by_nombre(self, nombre_jugador: str) -> Jugador:
-        jugador_model = self.session.get(JugadorModel, nombre_jugador)
+    def get_jugador_by_email(self, email: str) -> Jugador | None:
+        jugador_model = (
+            self.session.query(JugadorModel)
+            .filter(JugadorModel.correo == email)
+            .first()
+        )
         if jugador_model:
             return Jugador(
                 id=jugador_model.id,

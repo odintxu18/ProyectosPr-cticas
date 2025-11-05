@@ -2,14 +2,13 @@ import re
 import uuid
 from datetime import datetime
 
-from src.juego.domain.jugador import Jugador
-from src.partida.applicacion.uses_cases.use_cases_jugada_partida import (
+from src.jugador.domain.jugador import Jugador
+from src.partida.application.use_cases_jugada_partida import (
     registrar_jugada,
     terminar_partida,
     listar_partidas_jugador,
     obtener_jugadas_por_partida,
 )
-from ..common.fixtures import *
 from src.partida.domain.partida import Partida
 from src.partida.domain.jugada import Jugada
 

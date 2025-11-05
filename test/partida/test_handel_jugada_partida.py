@@ -1,22 +1,28 @@
 from datetime import datetime
+from http import client
+
+from pydantic.v1 import validate_email
+
+from src.jugador.applicacion.use_cases import use_cases_jugador
 
 from src.partida.domain.jugada import Jugada
 from src.partida.domain.partida import Partida
-from src.partida.handler.handler_jugada_partida import PartidaHandler
+from src.partida.handler import handler_jugada_partida
 from test.common.FakeUnitofWork import FakeUnitOfWork
 from ..common.fixtures import *
+from src.shared.web.api import app
 
 
-def test_crear_partida(fake_repo_jugadores, fake_repo_partidas, jugador_x, jugador_o):
-    fake_repo_jugadores.add(jugador_x)
-    fake_repo_jugadores.add(jugador_o)
+def test_crear_partida_endpoint(jugador_x, jugador_o):
+    validate_email(jugador_x.email)
+    validate_email(jugador_o.email)
+    response = client.post(
+        "/partidas/",
+        json={"id_jugador_x": jugador_x.id, "id_jugador_o": jugador_o.id},
+    )
 
-    uow = FakeUnitOfWork(fake_repo_jugadores, fake_repo_partidas)
-    handler = PartidaHandler(uow)
-
-    handler.crear_partida(jugador_x.id, jugador_o.id)
-
-    assert uow._committed
+    assert response.status_code == 201
+    assert response.json()["mensaje"] == "Partida creada correctamente"
 
 
 def test_registrar_jugada(

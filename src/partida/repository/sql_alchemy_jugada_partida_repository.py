@@ -9,12 +9,10 @@ from src.shared.dbmodels.dbmodels import (
     Jugada as JugadaModel,
 )
 from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
+from src.shared.sql_alchemy_interface import SqlAlchemyInterface
 
 
-class PartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository):
-
-    def __init__(self, session: Session):
-        self.session = session
+class PartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository, SqlAlchemyInterface):
 
     def agregar_partida(self, game: Partida) -> Partida:
 

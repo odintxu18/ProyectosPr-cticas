@@ -1,18 +1,24 @@
 import uuid
 from datetime import datetime, timezone
 
-from src.juego.domain.jugador import Jugador
-from src.juego.repository.jugador_repository import IJugadorRepository
+from src.partida.repository.jugador_repository import IJugadorRepository
 from src.partida.domain.jugada import Jugada
 from src.partida.domain.partida import Partida
 from src.partida.repository.Jugada_partida_repository import IPartidaJugadaRepository
 
 
 def crear_partida(
-    jugador_x: Jugador, jugador_o: Jugador, repo_partida: IPartidaJugadaRepository
-):
+    jugador_x_email: str,
+    jugador_o_email: str,
+    repo_partida: IPartidaJugadaRepository,
+    repo_jugador: IJugadorRepository,
+) -> str:
+
+    jugador_x = repo_jugador.get_jugador_by_email(jugador_x_email)
+    jugador_o = repo_jugador.get_jugador_by_email(jugador_o_email)
+    id_partida = str(uuid.uuid4())
     partida = Partida(
-        id=str(uuid.uuid4()),
+        id=id_partida,
         id_jugador_x=jugador_x.id,
         id_jugador_o=jugador_o.id,
         fecha_inicio=datetime.now(),
@@ -20,6 +26,7 @@ def crear_partida(
         id_ganador=None,
     )
     repo_partida.agregar_partida(partida)
+    return id_partida
 
 
 def registrar_jugada(

@@ -7,15 +7,15 @@ class IUnitOfWork(ABC):
         self.connect()
         return self
 
-    def __exit__(self, *args):
-        self.disconnect()
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.disconnect(exc_type)
 
     @abstractmethod
     def connect(self):
         raise NotImplementedError()
 
     @abstractmethod
-    def disconnect(self):
+    def disconnect(self, exc_type):
         raise NotImplementedError()
 
     @abstractmethod
@@ -32,8 +32,4 @@ class IUnitOfWork(ABC):
 
     @abstractmethod
     def get_new_session(self):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def close(self):
         raise NotImplementedError()

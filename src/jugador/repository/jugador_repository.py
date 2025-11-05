@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from src.juego.domain.jugador import Jugador
+from src.jugador.domain.jugador import Jugador
 
 
 class IJugadorRepository(ABC):
@@ -28,4 +28,7 @@ class IJugadorRepository(ABC):
 
     @abstractmethod
     def delete(self, jugador_id: str) -> None:
+        pass
+
+    def get_jugador_by_email(self, jugador_email: str) -> Optional[Jugador]:
         pass
