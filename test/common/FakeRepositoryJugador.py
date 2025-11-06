@@ -1,4 +1,3 @@
-# src/persistance/repositories/jugador_repository_sqlalchemy.py
 from pygments.lexers import j
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -6,7 +5,7 @@ from typing import List, Optional
 from src.jugador.domain.jugador import Jugador
 from src.shared.dbmodels.dbmodels import Jugador as JugadorModel
 from src.jugador.repository.jugador_repository import IJugadorRepository
-from test import jugador
+
 from src.shared.dbmodels.dbmodels import *
 
 

@@ -13,6 +13,14 @@ def test_new_player(nombre, correo, fake_repo_jugadores):
     assert result.correo == jugador.correo
 
 
+def test_correo_invalido(nombre, correo, fake_repo_jugadores):
+    correo = "nosoyuncorreo.neti"
+    jugador = Jugador(id=str(uuid.uuid4()), nombre=nombre, correo=correo)
+    test_validate_correo(correo)
+    fake_repo_jugadores.add(jugador)
+    assert jugador is None
+
+
 def test_validate_correo(correo):
     pattern = re.compile(
         "^[a-zA-Z 0-9^a-zA-Z0-9.\-_#~!$%&'*+/=?^{|}]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$"
@@ -37,3 +45,11 @@ def test_delete_jugador(jugador_x, fake_repo_jugadores):
     assert eliminado is True
     jug_eli = fake_repo_jugadores.get_by_id(jugador_x.id)
     assert jug_eli is None
+
+
+def test_get_by_id(jugador_x, fake_repo_jugadores):
+    fake_repo_jugadores.add(jugador_x)
+    buscado = fake_repo_jugadores.get_by_id(jugador_x.id)
+    assert buscado.id == jugador_x.id
+    assert buscado.nombre == jugador_x.nombre
+    assert buscado.correo == jugador_x.correo

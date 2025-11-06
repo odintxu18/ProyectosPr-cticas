@@ -15,7 +15,7 @@ class Jugada(Base):
     turno = Column(Integer, nullable=False, index=True)
     fila = Column(Integer, nullable=False)
     columna = Column(Integer, nullable=False)
-    fecha_jugada = Column(DateTime, nullable=False, default=datetime)
+    fecha_jugada = Column(DateTime, nullable=False, default=datetime.now)
     partida = relationship("Partida", foreign_keys=[id_partida])
     jugador = relationship("Jugador", foreign_keys=[id_jugador])
 
@@ -24,7 +24,7 @@ class Jugador(Base):
     __tablename__ = "jugadores"
 
     id = Column(String, primary_key=True, index=True)
-    nombre = Column(String, unique=True, nullable=False)
+    nombre = Column(String, nullable=False)
     correo = Column(String, unique=True, nullable=False)
 
 

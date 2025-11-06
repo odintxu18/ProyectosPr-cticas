@@ -19,14 +19,14 @@ app_jugador = APIRouter(prefix="/jugadores", tags=["Jugadores"])
 def crear_jugador(datos_jugador: dict):
     with UnitOfWorkSQLAlchemy(jugador_dependencies) as uow:
         try:
-            new_player(
+            id_jugador = new_player(
                 datos_jugador["nombre"],
                 datos_jugador["correo"],
                 uow.get_repository("jugador"),
             )
         except InvalidEmailException:
             raise HTTPException(status_code=400, detail="Formato de email no valido")
-    return {"mensaje": "Jugador creado correctamente"}
+    return {"id_jugador": id_jugador}
 
 
 @app_jugador.put("/", status_code=200)
