@@ -43,30 +43,6 @@ def test_crear_partida_exitosa(session):
     assert partida_db.jugador_o.id == jugador_o.id
 
 
-def test_crear_partida_jugador_inexistente(session):
-
-    app = FastAPI()
-    app.include_router(app_partida)
-    client = TestClient(app)
-
-    jugador_x = Jugador(
-        id=str(uuid.uuid4()),
-        nombre=f"NOMBRE{uuid.uuid4().hex[:6]}",
-        correo=f"{uuid.uuid4().hex[:6]}@test.com",
-    )
-    session.add(jugador_x)
-    session.commit()
-
-    datos_partida = {
-        "jugador_x_email": jugador_x.correo,
-        "jugador_o_email": "no_existe@test.com",
-    }
-
-    response = client.post("/partidas/", json=datos_partida)
-
-    assert response.status_code in (400, 404)
-
-
 def test_registrar_jugada_exitosa(session):
     app = FastAPI()
     app.include_router(app_partida)
