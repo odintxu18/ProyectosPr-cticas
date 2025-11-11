@@ -41,6 +41,8 @@ def registrar_jugada_endpoint(datos_jugada: dict):
             datos_jugada["columna"],
             uow.get_repository("partida"),
         )
+    if isinstance(jugada, dict):
+        return jugada
 
     return {
         "mensaje": "Jugada registrada correctamente",

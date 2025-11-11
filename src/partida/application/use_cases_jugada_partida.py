@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-
+from src.partida.domain.tablero import Tablero
 from src.partida.repository.jugador_repository import IJugadorRepository
 from src.partida.domain.jugada import Jugada
 from src.partida.domain.partida import Partida
@@ -35,17 +35,19 @@ def registrar_jugada(
     id_jugador: str,
     fila: int,
     columna: int,
-    repo_jugada: IPartidaJugadaRepository,
     repo_partida=IPartidaJugadaRepository,
 ):
+    jugadas_existentes = repo_partida.obtener_jugadas_por_partida(id_partida)
 
-    jugadas_existentes = repo_jugada.obtener_jugadas_por_partida(id_partida)
+    # 2️⃣ Verificamos que la celda no esté ocupada
     for jug in jugadas_existentes:
         if jug.fila == fila and jug.columna == columna:
             raise ValueError(f"La celda ({fila}, {columna}) ya está ocupada")
 
+    # 3️⃣ Calculamos el turno autoincremental
     turno = max((jug.turno for jug in jugadas_existentes), default=-1) + 1
 
+    # 4️⃣ Creamos la nueva jugada
     jugada = Jugada(
         id=str(uuid.uuid4()),
         id_partida=id_partida,
@@ -56,8 +58,23 @@ def registrar_jugada(
         fecha_jugada=datetime.now(timezone.utc),
     )
 
-    repo_jugada.agregar_jugada(jugada)
+    # 5️⃣ Guardamos la jugada
+    repo_partida.agregar_jugada(jugada)
 
+    # 6️⃣ Obtenemos la partida actualizada
+    partida = repo_partida.obtener_partida_por_id(id_partida)
+
+    # 7️⃣ Verificamos si hay un ganador
+    if verificar_ganador(repo_partida, id_partida, id_jugador):
+        terminar_partida(id_partida, id_jugador, repo_partida)
+        return {"mensaje": f"El jugador {id_jugador} ha ganado la partida"}
+
+    # 8️⃣ Verificamos si el tablero está lleno (empate)
+    if comprobar_tablero_lleno(repo_partida, id_partida):
+        terminar_partida(id_partida, None, repo_partida)
+        return {"mensaje": "Empate: el tablero está lleno"}
+
+    # 9️⃣ Si no hay ganador ni empate, devolvemos mensaje normal
     return jugada
 
 
@@ -140,10 +157,25 @@ def verificar_ganador(
     repo_partida: IPartidaJugadaRepository,
     id_partida: str,
     id_jugador: str,
-):
-    partida = repo_partida.obtener_partida_por_id(id_partida)
-    if not partida.comprobar_ganador(id_jugador):
-        return None
-    partida.ganador = id_jugador
-    repo_partida.actualizar_partida(partida)
-    return id_jugador
+) -> bool:
+    jugadas = repo_partida.obtener_jugadas_por_partida(id_partida)
+
+    tablero = Tablero()
+    for jug in jugadas:
+
+        simbolo = "X" if jug.id_jugador == id_jugador else "O"
+        tablero.colocar(jug.fila, jug.columna, simbolo)
+
+    return tablero.comprobar_ganador("X") or tablero.comprobar_ganador("O")
+
+
+def comprobar_tablero_lleno(
+    repo_partida: IPartidaJugadaRepository, id_partida: str
+) -> bool:
+
+    jugadas = repo_partida.obtener_jugadas_por_partida(id_partida)
+    tablero = Tablero()
+    for jug in jugadas:
+        tablero.colocar(jug.fila, jug.columna, "X" if jug.turno % 2 == 0 else "O")
+
+    return tablero.esta_lleno()
