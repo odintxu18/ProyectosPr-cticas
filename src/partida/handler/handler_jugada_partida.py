@@ -34,15 +34,20 @@ def crear_partida_endpoint(datos_partida: dict):
 def registrar_jugada_endpoint(datos_jugada: dict):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
-        registrar_jugada(
+        jugada = registrar_jugada(
             datos_jugada["id_partida"],
             datos_jugada["id_jugador"],
-            datos_jugada["turno"],
             datos_jugada["fila"],
             datos_jugada["columna"],
             uow.get_repository("partida"),
         )
-    return {"mensaje": "Jugada registrada correctamente"}
+
+    return {
+        "mensaje": "Jugada registrada correctamente",
+        "id_jugada": jugada.id,
+        "turno": jugada.turno,
+        "ganador": jugada.ganador if hasattr(jugada, "ganador") else None,
+    }
 
 
 @app_partida.post("/terminar", status_code=201)

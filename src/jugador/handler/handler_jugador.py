@@ -1,5 +1,4 @@
-from fastapi import APIRouter, HTTPException
-
+from fastapi import APIRouter, HTTPException, Body
 
 from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
 from src.jugador.settings.dependencies import jugador_dependencies
@@ -30,14 +29,14 @@ def crear_jugador(datos_jugador: dict):
 
 
 @app_jugador.put("/", status_code=200)
-def actualizar_jugador(datos_jugador: dict):
+def actualizar_jugador(datos_jugador: dict = Body(...)):
     with UnitOfWorkSQLAlchemy(jugador_dependencies) as uow:
         try:
             actualiazar_jugador(datos_jugador, uow.get_repository("jugador"))
         except JugadorNotFound:
-            raise HTTPException(status_code=404, detail="Jugador no encotrado")
+            raise HTTPException(status_code=404, detail="Jugador no encontrado")
         except InvalidEmailException:
-            raise HTTPException(status_code=400, detail="Formato de email no valido")
+            raise HTTPException(status_code=400, detail="Formato de email no válido")
     return {"mensaje": "Jugador actualizado correctamente"}
 
 

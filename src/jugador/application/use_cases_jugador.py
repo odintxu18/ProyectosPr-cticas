@@ -4,11 +4,13 @@ from src.jugador.domain.jugador import Jugador
 from src.jugador.repository.jugador_repository import IJugadorRepository
 
 
-def new_player(nombre: str, correo: str, jugador_repo: IJugadorRepository):
+def new_player(nombre: str, correo: str, jugador_repo: IJugadorRepository) -> str:
     if not _validate_email(correo):
         raise InvalidEmailException()
-    jugador = Jugador(id=str(uuid.uuid4()), nombre=nombre, correo=correo)
+    id = str(uuid.uuid4())
+    jugador = Jugador(id=id, nombre=nombre, correo=correo)
     jugador_repo.add(jugador)
+    return id
 
 
 def _validate_email(correo: str) -> bool:

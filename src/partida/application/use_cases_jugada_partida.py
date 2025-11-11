@@ -33,16 +33,23 @@ def crear_partida(
 def registrar_jugada(
     id_partida: str,
     id_jugador: str,
-    turno: int,
     fila: int,
     columna: int,
     repo_jugada: IPartidaJugadaRepository,
+    repo_partida=IPartidaJugadaRepository,
 ):
+
+    jugadas_existentes = repo_jugada.obtener_jugadas_por_partida(id_partida)
+    for jug in jugadas_existentes:
+        if jug.fila == fila and jug.columna == columna:
+            raise ValueError(f"La celda ({fila}, {columna}) ya está ocupada")
+
+    turno = max((jug.turno for jug in jugadas_existentes), default=-1) + 1
 
     jugada = Jugada(
         id=str(uuid.uuid4()),
-        id_partida=id_partida.strip().replace("'", ""),
-        id_jugador=id_jugador.strip(" ' "),
+        id_partida=id_partida,
+        id_jugador=id_jugador,
         turno=turno,
         fila=fila,
         columna=columna,
@@ -50,6 +57,8 @@ def registrar_jugada(
     )
 
     repo_jugada.agregar_jugada(jugada)
+
+    return jugada
 
 
 def terminar_partida(
@@ -125,3 +134,16 @@ def obtener_jugada_por_id(
         "columna": jugada.columna,
         "fecha_jugada": jugada.fecha_jugada,
     }
+
+
+def verificar_ganador(
+    repo_partida: IPartidaJugadaRepository,
+    id_partida: str,
+    id_jugador: str,
+):
+    partida = repo_partida.obtener_partida_por_id(id_partida)
+    if not partida.comprobar_ganador(id_jugador):
+        return None
+    partida.ganador = id_jugador
+    repo_partida.actualizar_partida(partida)
+    return id_jugador

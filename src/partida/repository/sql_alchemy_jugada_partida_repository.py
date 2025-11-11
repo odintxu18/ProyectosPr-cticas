@@ -95,8 +95,8 @@ class PartidaJugadaRepositorySQLAlchemy(IPartidaJugadaRepository, SqlAlchemyInte
             id_jugador=play.id_jugador,
             turno=play.turno,
             fila=play.fila,
-            columna=play.columna,
             fecha_jugada=play.fecha_jugada,
+            columna=play.columna,
         )
         self.session.add(jugada_model)
         self.session.commit()
