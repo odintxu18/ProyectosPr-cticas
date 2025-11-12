@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
+from src.partida.domain.tablero import Tablero
 from src.partida.repository.jugador_repository import IJugadorRepository
 from src.partida.domain.jugada import Jugada
 from src.partida.domain.partida import Partida
@@ -32,11 +33,21 @@ def crear_partida(
 def registrar_jugada(
     id_partida: str,
     id_jugador: str,
-    turno: int,
     fila: int,
     columna: int,
-    repo_jugada: IPartidaJugadaRepository,
+    repo_partida=IPartidaJugadaRepository,
 ):
+    if fila not in range(3) or columna not in range(3):
+        raise ValueError(
+            f"La posición ({fila}, {columna}) está fuera del rango permitido (0-2)."
+        )
+    jugadas_existentes = repo_partida.obtener_jugadas_por_partida(id_partida)
+
+    for jug in jugadas_existentes:
+        if jug.fila == fila and jug.columna == columna:
+            raise ValueError(f"La celda ({fila}, {columna}) ya está ocupada")
+
+    turno = max((jug.turno for jug in jugadas_existentes), default=-1) + 1
 
     jugada = Jugada(
         id=str(uuid.uuid4()),
@@ -48,7 +59,19 @@ def registrar_jugada(
         fecha_jugada=datetime.now(timezone.utc),
     )
 
-    repo_jugada.agregar_jugada(jugada)
+    repo_partida.agregar_jugada(jugada)
+
+    partida = repo_partida.obtener_partida_por_id(id_partida)
+
+    if verificar_ganador(repo_partida, id_partida, id_jugador):
+        terminar_partida(id_partida, id_jugador, repo_partida)
+        return {"mensaje": f"El jugador {id_jugador} ha ganado la partida"}
+
+    if comprobar_tablero_lleno(repo_partida, id_partida):
+        terminar_partida(id_partida, None, repo_partida)
+        return {"mensaje": "Empate: el tablero está lleno"}
+
+    return jugada
 
 
 def terminar_partida(
@@ -72,34 +95,83 @@ def terminar_partida(
 def listar_partidas_jugador(
     id_jugador: str,
     repo_partida: IPartidaJugadaRepository,
-):
+) -> list[dict]:
     partidas = repo_partida.listar_partidas()
     return [
-        Partida(
-            id=p.id,
-            id_jugador_x=p.id_jugador_x,
-            id_jugador_o=p.id_jugador_o,
-            fecha_inicio=p.fecha_inicio,
-            fecha_fin=p.fecha_fin,
-            id_ganador=p.id_ganador,
-        )
+        {
+            "id": p.id,
+            "id_jugador_x": p.id_jugador_x,
+            "id_jugador_o": p.id_jugador_o,
+            "fecha_inicio": p.fecha_inicio,
+            "fecha_fin": p.fecha_fin,
+            "id_ganador": p.id_ganador,
+        }
         for p in partidas
         if p.id_jugador_x == id_jugador or p.id_jugador_o == id_jugador
     ]
 
 
-def obtener_jugadas_por_partida(id_partida: str, repo_jugada: IPartidaJugadaRepository):
+def obtener_jugadas_por_partida(
+    id_partida: str, repo_jugada: IPartidaJugadaRepository
+) -> list[dict]:
     jugadas = repo_jugada.obtener_jugadas_por_partida(id_partida)
     return [
-        Jugada(
-            id=j.id,
-            id_partida=j.id_partida,
-            id_jugador=j.id_jugador,
-            turno=j.turno,
-            fila=j.fila,
-            columna=j.columna,
-            fecha_jugada=j.fecha_jugada,
-        )
+        {
+            "id": j.id,
+            "id_partida": j.id_partida,
+            "id_jugador": j.id_jugador,
+            "turno": j.turno,
+            "fila": j.fila,
+            "columna": j.columna,
+            "fecha_jugada": j.fecha_jugada,
+        }
         for j in jugadas
         if j.id_partida == id_partida
     ]
+
+
+def obtener_partida_por_id(id_partida: str, repo_partida: IPartidaJugadaRepository):
+    partida = repo_partida.obtener_partida_por_id(id_partida)
+
+
+def obtener_jugada_por_id(
+    id_jugada: str, repo_jugada: IPartidaJugadaRepository
+) -> dict:
+    jugada = repo_jugada.obtener_jugada_por_id(id_jugada)
+    return {
+        "id": jugada.id,
+        "id_partida": jugada.id_partida,
+        "id_jugador": jugada.id_jugador,
+        "turno": jugada.turno,
+        "fila": jugada.fila,
+        "columna": jugada.columna,
+        "fecha_jugada": jugada.fecha_jugada,
+    }
+
+
+def verificar_ganador(
+    repo_partida: IPartidaJugadaRepository,
+    id_partida: str,
+    id_jugador: str,
+) -> bool:
+    jugadas = repo_partida.obtener_jugadas_por_partida(id_partida)
+
+    tablero = Tablero()
+    for jug in jugadas:
+
+        simbolo = "X" if jug.id_jugador == id_jugador else "O"
+        tablero.colocar(jug.fila, jug.columna, simbolo)
+
+    return tablero.comprobar_ganador("X") or tablero.comprobar_ganador("O")
+
+
+def comprobar_tablero_lleno(
+    repo_partida: IPartidaJugadaRepository, id_partida: str
+) -> bool:
+
+    jugadas = repo_partida.obtener_jugadas_por_partida(id_partida)
+    tablero = Tablero()
+    for jug in jugadas:
+        tablero.colocar(jug.fila, jug.columna, "X" if jug.turno % 2 == 0 else "O")
+
+    return tablero.esta_lleno()

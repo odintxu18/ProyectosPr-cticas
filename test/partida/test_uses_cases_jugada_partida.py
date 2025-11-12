@@ -9,6 +9,7 @@ from src.partida.application.use_cases_jugada_partida import (
     listar_partidas_jugador,
     obtener_jugadas_por_partida,
 )
+from ..common.fixtures import *
 from src.partida.domain.partida import Partida
 from src.partida.domain.jugada import Jugada
 
@@ -102,7 +103,8 @@ def test_listar_partidas_jugador_retorna_solo_las_del_jugador(
 
     result = listar_partidas_jugador(jugador_x.id, fake_repo_partidas)
     assert len(result) == 1
-    assert result[0].id == partida_1.id
+    assert result[0]["id"] == partida_1.id
+    assert result[0]["id_jugador_x"] == jugador_x.id
 
 
 def test_obtener_jugadas_por_partida_devuelve_correctas(
@@ -131,5 +133,8 @@ def test_obtener_jugadas_por_partida_devuelve_correctas(
 
     jugadas = obtener_jugadas_por_partida(partida.id, fake_repo_partidas)
     assert len(jugadas) == 1
-    assert jugadas[0].id == jugada_1.id
-    assert jugadas[0].id_partida == partida.id
+    assert jugadas[0]["id"] == jugada_1.id
+    assert jugadas[0]["id_jugador"] == jugador_x.id
+    assert jugadas[0]["turno"] == 1
+    assert jugadas[0]["fila"] == 0
+    assert jugadas[0]["columna"] == 0

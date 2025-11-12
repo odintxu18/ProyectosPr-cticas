@@ -1,14 +1,16 @@
 import uuid
+from datetime import datetime
 
 import pytest
 from _pytest.fixtures import fixture
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from src.jugador.handler.handler_jugador import JugadorHandler
+from src.jugador.handler import handler_jugador
 from src.jugador.repository.sql_alchemy_jugador_repository import (
     JugadorRepositorySQLAlchemy,
 )
+from src.shared.dbmodels.database import SessionLocal
+from src.shared.dbmodels.dbmodels import Partida, Jugada
 from test.common.FakeRepositoryJugadaPartida import (
     FakePartidaJugadaRepositorySQLAlchemy,
 )
@@ -28,8 +30,6 @@ from src.partida.repository.sql_alchemy_jugada_partida_repository import (
 
 @pytest.fixture(scope="function")
 def session():
-    engine = create_engine("sqlite:///db1.db")  # tu DB de prueba
-    SessionLocal = sessionmaker(bind=engine)
     session: Session = SessionLocal()
     yield session
     session.rollback()
@@ -93,4 +93,36 @@ def fake_uow(fake_repo_jugadores):
 @pytest.fixture
 def jugador_handler(fake_uow):
 
-    return JugadorHandler(fake_uow)
+    return handler_jugador(fake_uow)
+
+
+@pytest.fixture
+def setup_partida(session):
+    # Crear IDs de jugadores
+    id_jugador_x = str(uuid.uuid4())
+    id_jugador_o = str(uuid.uuid4())
+
+    # Crear partida
+    partida = Partida(
+        id=str(uuid.uuid4()),
+        id_jugador_x=id_jugador_x,
+        id_jugador_o=id_jugador_o,
+        fecha_inicio=datetime.now(),
+    )
+    session.add(partida)
+    session.commit()
+
+    # Crear jugada asociada
+    jugada = Jugada(
+        id=str(uuid.uuid4()),
+        id_partida=partida.id,
+        id_jugador=id_jugador_x,
+        turno=1,
+        fila=0,
+        columna=0,
+        fecha_jugada=datetime.now(),
+    )
+    session.add(jugada)
+    session.commit()
+
+    return session, jugada

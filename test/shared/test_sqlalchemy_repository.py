@@ -1,9 +1,6 @@
 import uuid
 
 
-from datetime import datetime
-
-
 from ..common.fixtures import *
 from src.shared.dbmodels.dbmodels import *
 
