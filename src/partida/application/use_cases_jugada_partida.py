@@ -37,17 +37,18 @@ def registrar_jugada(
     columna: int,
     repo_partida=IPartidaJugadaRepository,
 ):
+    if fila not in range(3) or columna not in range(3):
+        raise ValueError(
+            f"La posición ({fila}, {columna}) está fuera del rango permitido (0-2)."
+        )
     jugadas_existentes = repo_partida.obtener_jugadas_por_partida(id_partida)
 
-    # 2️⃣ Verificamos que la celda no esté ocupada
     for jug in jugadas_existentes:
         if jug.fila == fila and jug.columna == columna:
             raise ValueError(f"La celda ({fila}, {columna}) ya está ocupada")
 
-    # 3️⃣ Calculamos el turno autoincremental
     turno = max((jug.turno for jug in jugadas_existentes), default=-1) + 1
 
-    # 4️⃣ Creamos la nueva jugada
     jugada = Jugada(
         id=str(uuid.uuid4()),
         id_partida=id_partida,
@@ -58,23 +59,18 @@ def registrar_jugada(
         fecha_jugada=datetime.now(timezone.utc),
     )
 
-    # 5️⃣ Guardamos la jugada
     repo_partida.agregar_jugada(jugada)
 
-    # 6️⃣ Obtenemos la partida actualizada
     partida = repo_partida.obtener_partida_por_id(id_partida)
 
-    # 7️⃣ Verificamos si hay un ganador
     if verificar_ganador(repo_partida, id_partida, id_jugador):
         terminar_partida(id_partida, id_jugador, repo_partida)
         return {"mensaje": f"El jugador {id_jugador} ha ganado la partida"}
 
-    # 8️⃣ Verificamos si el tablero está lleno (empate)
     if comprobar_tablero_lleno(repo_partida, id_partida):
         terminar_partida(id_partida, None, repo_partida)
         return {"mensaje": "Empate: el tablero está lleno"}
 
-    # 9️⃣ Si no hay ganador ni empate, devolvemos mensaje normal
     return jugada
 
 

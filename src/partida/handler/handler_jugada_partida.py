@@ -34,13 +34,17 @@ def crear_partida_endpoint(datos_partida: dict):
 def registrar_jugada_endpoint(datos_jugada: dict):
 
     with UnitOfWorkSQLAlchemy(partida_dependencies) as uow:
-        jugada = registrar_jugada(
-            datos_jugada["id_partida"],
-            datos_jugada["id_jugador"],
-            datos_jugada["fila"],
-            datos_jugada["columna"],
-            uow.get_repository("partida"),
-        )
+        try:
+            jugada = registrar_jugada(
+                datos_jugada["id_partida"],
+                datos_jugada["id_jugador"],
+                datos_jugada["fila"],
+                datos_jugada["columna"],
+                uow.get_repository("partida"),
+            )
+        except ValueError as e:
+
+            raise HTTPException(status_code=400, detail=str(e))
     if isinstance(jugada, dict):
         return jugada
 
