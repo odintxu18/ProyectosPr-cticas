@@ -69,8 +69,3 @@ def get_jugador(id_jugador: str):
             raise HTTPException(status_code=500, detail=str(e))
 
     return jugador
-
-
-@app_jugador.get("/secure-data", dependencies=[Depends(get_api_key)])
-async def secure_data():
-    return {"message": "This is protected data!"}
