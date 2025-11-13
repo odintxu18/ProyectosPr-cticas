@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Depends
 
+from src.shared.security.security import get_api_key
 from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
 from src.jugador.settings.dependencies import jugador_dependencies
 from src.jugador.application.use_cases_jugador import (
@@ -11,11 +12,18 @@ from src.jugador.application.use_cases_jugador import (
     get_jugador_by_id,
 )
 
-app_jugador = APIRouter(prefix="/jugadores", tags=["Jugadores"])
+app_jugador = APIRouter(
+    prefix="/jugadores", tags=["Jugadores"], dependencies=[Depends(get_api_key)]
+)
 
 
-@app_jugador.post("/", status_code=201)
-def crear_jugador(datos_jugador: dict):
+@app_jugador.post(
+    "/",
+    status_code=201,
+)
+def crear_jugador(
+    datos_jugador: dict,
+):
     with UnitOfWorkSQLAlchemy(jugador_dependencies) as uow:
         try:
             id_jugador = new_player(
@@ -61,3 +69,8 @@ def get_jugador(id_jugador: str):
             raise HTTPException(status_code=500, detail=str(e))
 
     return jugador
+
+
+@app_jugador.get("/secure-data", dependencies=[Depends(get_api_key)])
+async def secure_data():
+    return {"message": "This is protected data!"}

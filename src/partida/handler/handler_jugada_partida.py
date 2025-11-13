@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
+from src.api_main import get_api_key
 from src.partida.repository.jugador_repository import IJugadorRepository
 from src.partida.settings.dependencies import partida_dependencies
 from src.shared.uow.uow_SQLAlchemy import UnitOfWorkSQLAlchemy
@@ -13,7 +14,9 @@ from src.partida.application.use_cases_jugada_partida import (
     obtener_jugada_por_id,
 )
 
-app_partida = APIRouter(prefix="/partidas", tags=["Partidas"])
+app_partida = APIRouter(
+    prefix="/partidas", tags=["Partidas"], dependencies=[Depends(get_api_key)]
+)
 
 
 @app_partida.post("/", status_code=201)

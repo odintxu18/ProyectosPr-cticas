@@ -18,6 +18,8 @@ def crear_partida(
     jugador_x = repo_jugador.get_jugador_by_email(jugador_x_email)
     jugador_o = repo_jugador.get_jugador_by_email(jugador_o_email)
     id_partida = str(uuid.uuid4())
+    print(f"JUGADOR X: {jugador_x}")
+    print(f"JUGADOR X ID : {jugador_x.id}")
     partida = Partida(
         id=id_partida,
         id_jugador_x=jugador_x.id,

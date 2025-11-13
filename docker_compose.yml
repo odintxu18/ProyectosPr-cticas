@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  tictactoe-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tictactoe_api
+    ports:
+      - "80:80"  # Mapea el puerto 80 del host al 80 del contenedor
+    environment:
+      - STAGE=dev
+    volumes:
+      - ./src:/app/src          # Opción: para desarrollo, montar tu código local
+      - ./alembic:/app/alembic  # Para mantener las migraciones sincronizadas
+    command: >
+      uv run uvicorn src.api_main:main_app
+      --host 0.0.0.0
+      --port 80
+    depends_on: []
+    restart: always
